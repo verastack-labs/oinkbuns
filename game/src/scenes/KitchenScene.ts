@@ -12,10 +12,10 @@ import type { DayEndData, KitchenData } from './sceneData';
 
 /** Where each station's prop is drawn (its centre), from STATION_POINTS. */
 const PROP: Partial<Record<StationId, { key: string; x: number; y: number }>> = {
-  bowl: { key: 'bowl', x: 90, y: 330 },
-  chipJar: { key: 'chip-jar', x: 80, y: 455 },
-  icing: { key: 'icing-table', x: 520, y: 668 },
-  bin: { key: 'bin', x: 820, y: 662 },
+  bowl: { key: 'bowl', x: 75, y: 330 },
+  chipJar: { key: 'chip-jar', x: 75, y: 450 },
+  icing: { key: 'icing-table', x: 520, y: 650 },
+  bin: { key: 'bin', x: 820, y: 650 },
 };
 
 const ITEM_TEXTURE: Record<ItemKind, string> = {
@@ -30,6 +30,13 @@ const ITEM_TEXTURE: Record<ItemKind, string> = {
 
 const DEPTH = { floor: 0, props: 10, customers: 20, counter: 30, peppa: 40, ui: 100 } as const;
 const WALK_FRAME_SECONDS = 0.14;
+// The oven is drawn a little right of its interaction points so Peppa, who
+// stops beside it, never covers the door windows. Its two windows sit at
+// y 330 and 450, the oven-0 and oven-1 points.
+const OVEN_X = 1190;
+// Customers stand behind the counter (top edge y 145), which hides their legs.
+const CUSTOMER_FEET_Y = 215;
+const CUSTOMER_SCALE = 0.85;
 
 interface CustomerView {
   root: Phaser.GameObjects.Container;
@@ -38,6 +45,7 @@ interface CustomerView {
   ticks: Phaser.GameObjects.Text[];
   patience: Phaser.GameObjects.Graphics;
   id: string;
+  top: number; // y of the bubble's tail tip, relative to the feet
 }
 
 /**
@@ -57,6 +65,7 @@ export class KitchenScene extends Phaser.Scene {
   private icingBar!: Phaser.GameObjects.Graphics;
   private promptBubble!: Phaser.GameObjects.Container;
   private promptLabel!: Phaser.GameObjects.Text;
+  private promptBg!: Phaser.GameObjects.Image;
   private penniesText!: Phaser.GameObjects.Text;
   private clockText!: Phaser.GameObjects.Text;
   private hintArrow!: Phaser.GameObjects.Image;
@@ -74,7 +83,7 @@ export class KitchenScene extends Phaser.Scene {
     this.ovenSlots = [];
     this.walkClock = 0;
 
-    this.add.image(LOGICAL_WIDTH / 2, 360, 'kitchen-bg').setDepth(DEPTH.floor);
+    this.add.image(0, 0, 'kitchen-bg').setOrigin(0).setDepth(DEPTH.floor);
 
     for (const [id, prop] of Object.entries(PROP) as [StationId, { key: string; x: number; y: number }][]) {
       this.stations.set(id, this.add.image(prop.x, prop.y, prop.key).setDepth(DEPTH.props));
@@ -82,24 +91,24 @@ export class KitchenScene extends Phaser.Scene {
     // Spec 7.5: the chip jar shows only on days that use it.
     this.stations.get('chipJar')?.setVisible(config.chipChance > 0);
 
-    this.add.image(1180, 390, 'oven').setDepth(DEPTH.props);
+    this.add.image(OVEN_X, 390, 'oven').setDepth(DEPTH.props);
     for (const id of ['oven-0', 'oven-1'] as const) {
       const p = STATION_POINTS[id];
-      this.ovenSlots.push(this.add.image(p.x + 10, p.y, 'oven-slot-baking').setDepth(DEPTH.props + 1).setVisible(false));
+      this.ovenSlots.push(this.add.image(OVEN_X, p.y, 'oven-slot-baking').setDepth(DEPTH.props + 1).setVisible(false));
     }
     this.ovenBars = this.add.graphics().setDepth(DEPTH.props + 2);
     this.icingBar = this.add.graphics().setDepth(DEPTH.ui);
 
-    this.add.image(LOGICAL_WIDTH / 2, 205, 'counter').setDepth(DEPTH.counter);
+    this.add.image(LOGICAL_WIDTH / 2, 200, 'counter').setDepth(DEPTH.counter);
 
     this.peppa = this.add.image(0, 0, 'peppa-idle').setOrigin(0.5, 1).setDepth(DEPTH.peppa);
     this.held = this.add.image(0, 0, 'bun-dough').setDepth(DEPTH.peppa + 1).setVisible(false);
 
     this.promptLabel = this.add
-      .text(0, -62, '', { fontFamily: FONT_STACK, fontSize: '26px', fontStyle: 'bold', color: cssColor(COLORS.text) })
+      .text(0, -51, '', { fontFamily: FONT_STACK, fontSize: '26px', fontStyle: 'bold', color: cssColor(COLORS.text) })
       .setOrigin(0.5);
-    const bubbleBg = this.add.image(0, 0, 'bubble').setOrigin(0.5, 1).setScale(1, 0.75);
-    this.promptBubble = this.add.container(0, 0, [bubbleBg, this.promptLabel]).setDepth(DEPTH.ui).setVisible(false);
+    this.promptBg = this.add.image(0, 0, 'bubble').setOrigin(0.5, 1).setScale(1, 0.75);
+    this.promptBubble = this.add.container(0, 0, [this.promptBg, this.promptLabel]).setDepth(DEPTH.ui).setVisible(false);
 
     this.hintArrow = this.add.image(0, 0, 'arrow').setDepth(DEPTH.ui).setVisible(false);
     this.tweens.add({ targets: this.hintArrow, scaleY: 0.85, duration: 400, yoyo: true, repeat: -1 });
@@ -188,10 +197,10 @@ export class KitchenScene extends Phaser.Scene {
       }
       img.setVisible(true).setTexture(`oven-slot-${slot.status}`);
       if (slot.status === 'baking') {
-        this.bar(this.ovenBars, p.x - 50, p.y + 46, 100, slot.elapsed / cfg.bakeSeconds, COLORS.bun);
+        this.bar(this.ovenBars, OVEN_X - 50, p.y + 46, 100, slot.elapsed / cfg.bakeSeconds, COLORS.bun);
       } else if (slot.status === 'ready' && cfg.burnWindowSeconds !== null) {
         // Counts down to burning, so the warning is visible, not just heard.
-        this.bar(this.ovenBars, p.x - 50, p.y + 46, 100, 1 - slot.elapsed / cfg.burnWindowSeconds, COLORS.bad);
+        this.bar(this.ovenBars, OVEN_X - 50, p.y + 46, 100, 1 - slot.elapsed / cfg.burnWindowSeconds, COLORS.bad);
       }
     });
   }
@@ -222,36 +231,40 @@ export class KitchenScene extends Phaser.Scene {
       const p = STATION_POINTS[counterId(c.spot)];
       // Customers stand behind the counter (it hides their legs), with the
       // order bubble just above their heads.
-      view.root.setPosition(p.x, p.y + 45);
+      view.root.setPosition(p.x, CUSTOMER_FEET_Y);
       c.order.buns.forEach((bun, i) => {
         view.buns[i]?.setAlpha(bun.served ? 0.35 : 1);
         view.ticks[i]?.setVisible(bun.served);
       });
       const g = view.patience;
       g.clear();
-      this.bar(g, -55, -150, 110, c.patience, c.patience > 0.5 ? COLORS.good : c.patience > 0.25 ? COLORS.bun : COLORS.bad);
+      this.bar(g, -48, view.top - 26, 96, c.patience, c.patience > 0.5 ? COLORS.good : c.patience > 0.25 ? COLORS.bun : COLORS.bad);
     }
   }
 
   private makeCustomer(c: CustomerState): CustomerView {
-    const body = this.add.image(0, 0, `${c.id}-idle`).setOrigin(0.5, 1).setFlipX(true);
-    const bubble = this.add.image(0, -122, 'bubble').setOrigin(0.5, 1).setScale(1.1, 0.75);
+    // Customers stand further back than Peppa, so they are drawn a little
+    // smaller; the order bubble sits just above each one's head, whatever
+    // their height (Grandpa is the tallest).
+    const body = this.add.image(0, 0, `${c.id}-idle`).setOrigin(0.5, 1).setFlipX(true).setScale(CUSTOMER_SCALE);
+    const top = -body.displayHeight - 2;
+    const bubble = this.add.image(0, top, 'bubble').setOrigin(0.5, 1).setScale(1.05, 0.62);
     const n = c.order.buns.length;
     const buns: Phaser.GameObjects.Image[] = [];
     const ticks: Phaser.GameObjects.Text[] = [];
     c.order.buns.forEach((bun, i) => {
       const x = (i - (n - 1) / 2) * 40;
-      buns.push(this.add.image(x, -177, bun.kind === 'chip' ? 'bun-chip-hot-cross' : 'bun-hot-cross').setScale(0.5));
+      buns.push(this.add.image(x, top - 42, bun.kind === 'chip' ? 'bun-chip-hot-cross' : 'bun-hot-cross').setScale(0.45));
       ticks.push(
         this.add
-          .text(x, -177, '✓', { fontFamily: FONT_STACK, fontSize: '40px', fontStyle: 'bold', color: cssColor(COLORS.good) })
+          .text(x, top - 42, '✓', { fontFamily: FONT_STACK, fontSize: '34px', fontStyle: 'bold', color: cssColor(COLORS.good) })
           .setOrigin(0.5)
           .setVisible(false),
       );
     });
     const patience = this.add.graphics();
     const root = this.add.container(0, 0, [body, bubble, ...buns, ...ticks, patience]).setDepth(DEPTH.customers);
-    return { root, body, buns, ticks, patience, id: c.id };
+    return { root, body, buns, ticks, patience, id: c.id, top };
   }
 
   private renderPrompt(): void {
@@ -261,13 +274,22 @@ export class KitchenScene extends Phaser.Scene {
       this.promptBubble.setVisible(false);
       return;
     }
-    const p = STATION_POINTS[prompt.station];
-    // Counter prompts sit beside the customer's order bubble, not on it.
-    const isCounter = prompt.station.startsWith('counter');
-    const x = isCounter ? p.x : Math.min(Math.max(p.x, 110), LOGICAL_WIDTH - 110);
-    const y = isCounter ? p.y + 150 : p.y - 60;
+    // The prompt floats over Peppa's head, where a child is already looking.
+    // Near the top of the floor that would collide with the customers' order
+    // bubbles, so there it moves beside her at shoulder height, on the side
+    // facing the middle of the kitchen.
+    const s = this.day.state;
     this.promptLabel.setText(promptText(prompt.label));
-    this.promptBubble.setPosition(x, y + 40).setVisible(true);
+    this.promptBg.setScale(Math.max(1, (this.promptLabel.width + 44) / 150), 0.75);
+    const half = (this.promptBg.displayWidth) / 2;
+    let x = s.peppa.x;
+    let y = s.peppa.y - 142;
+    if (y - 82 < 110) {
+      x = s.peppa.x + (s.peppa.x > LOGICAL_WIDTH / 2 ? -1 : 1) * (60 + half);
+      y = s.peppa.y - 10;
+    }
+    x = Math.min(Math.max(x, half + 8), LOGICAL_WIDTH - half - 8);
+    this.promptBubble.setPosition(x, y).setVisible(true);
   }
 
   private renderHint(): void {
@@ -280,7 +302,7 @@ export class KitchenScene extends Phaser.Scene {
     }
     const p = STATION_POINTS[hint];
     const below = hint.startsWith('counter');
-    this.hintArrow.setVisible(true).setPosition(p.x, below ? p.y + 140 : p.y - 110).setAngle(below ? -90 : 90);
+    this.hintArrow.setVisible(true).setPosition(p.x, below ? p.y + 75 : p.y - 110).setAngle(below ? -90 : 90);
   }
 
   private bar(g: Phaser.GameObjects.Graphics, x: number, y: number, w: number, fraction: number, color: number): void {

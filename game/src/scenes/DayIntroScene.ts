@@ -58,7 +58,8 @@ export class DayIntroScene extends Phaser.Scene {
     new Button(
       this,
       CX,
-      600,
+      // The card ends at y 560; the button (84 tall) sits clear below it.
+      625,
       'Go',
       () => {
         const kitchen: KitchenData = { dayId: day.id, seed: Date.now() };

@@ -20,12 +20,13 @@ export class TitleScene extends Phaser.Scene {
   create(): void {
     this.cameras.main.setBackgroundColor(COLORS.wall);
 
-    this.add.image(CX, 200, 'logo');
+    // Vertical rhythm: logo 62-288, title 290-400, tagline 418-452, Play 498-582.
+    this.add.image(CX, 175, 'logo').setScale(0.75);
 
     this.add
-      .text(CX, 400, 'Oinkbuns', {
+      .text(CX, 345, 'Oinkbuns', {
         fontFamily: FONT_STACK,
-        fontSize: '112px',
+        fontSize: '96px',
         fontStyle: 'bold',
         color: cssColor(COLORS.peppaRed),
         stroke: cssColor(COLORS.outline),
@@ -34,7 +35,7 @@ export class TitleScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(CX, 455, 'Bake hot cross buns with Peppa', {
+      .text(CX, 435, 'Bake hot cross buns with Peppa', {
         fontFamily: FONT_STACK,
         fontSize: '36px',
         color: cssColor(COLORS.text),
@@ -44,7 +45,7 @@ export class TitleScene extends Phaser.Scene {
     new Button(
       this,
       CX,
-      518,
+      540,
       'Play',
       () => {
         this.scene.start(SceneKey.DayIntro, { dayId: 1 });

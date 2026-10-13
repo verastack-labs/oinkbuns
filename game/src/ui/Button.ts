@@ -39,7 +39,10 @@ export class Button extends Phaser.GameObjects.Container {
     this.add([face, text]);
     this.setSize(width, HEIGHT);
     this.setInteractive({
-      hitArea: new Phaser.Geom.Rectangle(-width / 2, -HEIGHT / 2, width, HEIGHT),
+      // Once a Container has a size, Phaser measures pointer positions from its
+      // top-left corner (it adds the display origin), so the hit rectangle
+      // starts at 0,0 even though the drawing is centred on the container.
+      hitArea: new Phaser.Geom.Rectangle(0, 0, width, HEIGHT),
       hitAreaCallback: Phaser.Geom.Rectangle.Contains,
       useHandCursor: true,
     });

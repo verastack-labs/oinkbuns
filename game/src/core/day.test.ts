@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Day, computeStars } from './day';
-import { ICING_SECONDS, STATION_POINTS } from './layout';
+import { ICING_SECONDS, STATION_POINTS, WALKABLE } from './layout';
 import type { DayConfig, DayEvent, Intent, Point } from './types';
 
 const DT = 1 / 60;
@@ -145,7 +145,7 @@ describe('Day', () => {
     for (let i = 0; i < 600; i += 1) {
       day.tick(DT, { moveX: -1, moveY: -1, action: false });
     }
-    expect(day.state.peppa).toMatchObject({ x: 160, y: 230, facing: 'left', moving: true });
+    expect(day.state.peppa).toMatchObject({ x: WALKABLE.x0, y: WALKABLE.y0, facing: 'left', moving: true });
     const start = { ...day.state.peppa };
     day.tick(1, { moveX: 1, moveY: 1, action: false });
     const moved = Math.hypot(day.state.peppa.x - start.x, day.state.peppa.y - start.y);
