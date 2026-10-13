@@ -1,0 +1,16 @@
+{
+  "id": 5,
+  "name": "Grandpa's Big Order",
+  "twist": "Three can queue, and Grandpa wants three buns!",
+  "end": { "type": "time", "seconds": 100 },
+  "customers": ["george", "suzy", "danny", "grandpa"],
+  "maxOrderSize": 3,
+  "maxQueue": 3,
+  "spawnGapSeconds": [4, 8],
+  "chipChance": 0.5,
+  "bakeSeconds": 4,
+  "burnWindowSeconds": 4,
+  "patienceMultiplier": 1,
+  "tutorial": false,
+  "stars": [10, 15, 20]
+}

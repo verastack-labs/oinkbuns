@@ -54,7 +54,7 @@ export class TitleScene extends Phaser.Scene {
       540,
       'Play',
       () => {
-        this.scene.start(SceneKey.DayIntro, { dayId: 1 });
+        this.scene.start(SceneKey.DaySelect);
       },
       { width: 280 },
     );

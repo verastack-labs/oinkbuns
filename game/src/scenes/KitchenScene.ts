@@ -7,10 +7,12 @@ import { dayById } from '../data/days';
 import { InputController } from '../input/InputController';
 import { COLORS, cssColor, FONT_STACK } from '../ui/theme';
 import { promptText } from '../ui/promptText';
+import { buzz } from '../fx/haptics';
 import { MuteButton } from '../ui/MuteButton';
+import { PauseButton } from '../ui/PauseButton';
 import { KitchenFx } from './kitchenFx';
 import { SceneKey } from './keys';
-import type { DayEndData, KitchenData } from './sceneData';
+import type { DayEndData, KitchenData, PauseData } from './sceneData';
 
 /** Where each station's prop is drawn (its centre), from STATION_POINTS. */
 const PROP: Partial<Record<StationId, { key: string; x: number; y: number }>> = {
@@ -93,6 +95,36 @@ export class KitchenScene extends Phaser.Scene {
   private heldRoot!: Phaser.GameObjects.Container;
   private fx!: KitchenFx;
   private ovenImage: Phaser.GameObjects.Image | null = null;
+  private pauseRequested = false;
+  private resumedAt = 0;
+  private readonly onLostFocus = (): void => this.pauseGame();
+
+  // Blur and hidden can fire within the same millisecond (alt-tab does both),
+  // and launch() is queued until the next update, so a flag is the only
+  // reliable guard against two overlays.
+  private pauseGame(): void {
+    if (this.pauseRequested || this.day.state.over) return;
+    if (performance.now() - this.resumedAt < 250) return;
+    this.pauseRequested = true;
+    const data: PauseData = { dayId: this.day.config.id };
+    this.scene.launch(SceneKey.Pause, data);
+    this.scene.pause();
+  }
+
+  private installPauseHooks(): void {
+    this.game.events.on(Phaser.Core.Events.BLUR, this.onLostFocus);
+    this.game.events.on(Phaser.Core.Events.HIDDEN, this.onLostFocus);
+    this.input.keyboard?.on('keydown-ESC', this.onLostFocus);
+    this.events.on(Phaser.Scenes.Events.RESUME, () => {
+      this.pauseRequested = false;
+      this.resumedAt = performance.now();
+    });
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.game.events.off(Phaser.Core.Events.BLUR, this.onLostFocus);
+      this.game.events.off(Phaser.Core.Events.HIDDEN, this.onLostFocus);
+      sfx().setMusicRate(1);
+    });
+  }
 
   constructor() {
     super(SceneKey.Kitchen);
@@ -151,7 +183,8 @@ export class KitchenScene extends Phaser.Scene {
     this.penniesText = this.add.text(24, 16, '', hud).setDepth(DEPTH.ui);
     // The mute button takes the top-right corner, so the clock sits left of it.
     new MuteButton(this, LOGICAL_WIDTH - 56, 56).setDepth(DEPTH.ui);
-    this.clockText = this.add.text(LOGICAL_WIDTH - 108, 16, '', hud).setOrigin(1, 0).setDepth(DEPTH.ui);
+    new PauseButton(this, LOGICAL_WIDTH - 136, 56, () => this.pauseGame()).setDepth(DEPTH.ui);
+    this.clockText = this.add.text(LOGICAL_WIDTH - 184, 16, '', hud).setOrigin(1, 0).setDepth(DEPTH.ui);
 
     const touch = this.sys.game.device.input.touch;
     this.input2 = new InputController(this, { touch });
@@ -175,10 +208,15 @@ export class KitchenScene extends Phaser.Scene {
 
     this.render();
     sfx().music('kitchen');
+    sfx().setMusicRate(1);
+    this.pauseRequested = false;
+    this.installPauseHooks();
   }
 
   update(_time: number, delta: number): void {
-    const dt = delta / 1000;
+    // A blurred tab keeps stepping; capping the frame means no single frame
+    // can jump the day clock by more than a tenth of a second.
+    const dt = Math.min(delta, 100) / 1000;
     const s = this.day.state;
     const intent = this.input2.read({ x: s.peppa.x, y: s.peppa.y });
     // Pressing act with nothing to do gets a gentle no rather than silence.
@@ -194,7 +232,15 @@ export class KitchenScene extends Phaser.Scene {
 
   private handleEvent(event: DayEvent): void {
     switch (event.type) {
+      case 'last-seconds':
+        // Spec 6.2: the kitchen loop speeds up for the last fifteen seconds.
+        sfx().setMusicRate(1.15);
+        break;
+      case 'bun-served':
+        buzz(30);
+        break;
       case 'day-over': {
+        sfx().setMusicRate(1);
         const data: DayEndData = { dayId: this.day.config.id, pennies: event.pennies, stars: event.stars };
         this.scene.launch(SceneKey.DayEnd, data);
         this.scene.pause();

@@ -1,0 +1,16 @@
+{
+  "id": 3,
+  "name": "Don't Burn Them!",
+  "twist": "Take buns out when the oven dings, or they burn!",
+  "end": { "type": "time", "seconds": 90 },
+  "customers": ["george", "suzy", "danny"],
+  "maxOrderSize": 2,
+  "maxQueue": 2,
+  "spawnGapSeconds": [5, 9],
+  "chipChance": 0,
+  "bakeSeconds": 4,
+  "burnWindowSeconds": 4,
+  "patienceMultiplier": 1,
+  "tutorial": false,
+  "stars": [6, 9, 12]
+}

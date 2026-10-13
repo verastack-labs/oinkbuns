@@ -13,3 +13,6 @@ export interface DayEndData {
   pennies: number;
   stars: Stars;
 }
+export interface PauseData {
+  dayId: number;
+}

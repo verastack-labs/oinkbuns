@@ -5,7 +5,10 @@ import { COLORS, cssColor, FONT_STACK } from './theme';
 
 const HEIGHT = 84; // above the 72 px touch minimum (spec 6.4)
 const RADIUS = 24;
-const HIT_PAD = 16;
+// Extra hit area on every side. Kept at 10 so buttons stacked 105 px apart
+// (the pause menu) or side by side 20 px apart (the day-end card) never
+// have overlapping click areas.
+const HIT_PAD = 10;
 
 /**
  * A rounded green button with a dark outline and a big label. Fires onClick

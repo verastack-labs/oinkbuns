@@ -3,6 +3,8 @@ import { LOGICAL_HEIGHT, LOGICAL_WIDTH } from './core/layout';
 import { BootScene } from './scenes/BootScene';
 import { DayEndOverlay } from './scenes/DayEndOverlay';
 import { DayIntroScene } from './scenes/DayIntroScene';
+import { DaySelectScene } from './scenes/DaySelectScene';
+import { PauseOverlay } from './scenes/PauseOverlay';
 import { KitchenScene } from './scenes/KitchenScene';
 import { TitleScene } from './scenes/TitleScene';
 import { COLORS } from './ui/theme';
@@ -23,5 +25,5 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [BootScene, TitleScene, DayIntroScene, KitchenScene, DayEndOverlay],
+  scene: [BootScene, TitleScene, DaySelectScene, DayIntroScene, KitchenScene, DayEndOverlay, PauseOverlay],
 };

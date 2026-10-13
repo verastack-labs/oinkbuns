@@ -1,0 +1,16 @@
+{
+  "id": 4,
+  "name": "Choc Chip Day",
+  "twist": "Some orders want choc-chip buns. Dip dough in the chip jar!",
+  "end": { "type": "time", "seconds": 90 },
+  "customers": ["george", "suzy", "danny"],
+  "maxOrderSize": 2,
+  "maxQueue": 2,
+  "spawnGapSeconds": [5, 9],
+  "chipChance": 0.5,
+  "bakeSeconds": 4,
+  "burnWindowSeconds": 4,
+  "patienceMultiplier": 1,
+  "tutorial": false,
+  "stars": [8, 12, 16]
+}
