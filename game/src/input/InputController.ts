@@ -23,7 +23,11 @@ export class InputController {
   private readonly keys: MoveKeys | null;
   private readonly actionKeys: Phaser.Input.Keyboard.Key[] = [];
   private pointerTarget: Point | null = null;
-  private clicked = false;
+  // A mouse click means "go there and do it": the action waits until Peppa
+  // arrives or can get no closer, then fires once.
+  private pendingAction = false;
+  private pendingFrames = 0;
+  private lastPeppa: Point | null = null;
   private readonly stick: TouchStick | null = null;
   private readonly button: TouchButton | null = null;
 
@@ -62,8 +66,9 @@ export class InputController {
 
     const keyHeld = moveX !== 0 || moveY !== 0;
     if (keyHeld) {
-      // Keys win; forget the pointer until it moves again.
+      // Keys win; forget the pointer and any click until it moves again.
       this.pointerTarget = null;
+      this.pendingAction = false;
     } else if (this.stick?.active) {
       moveX = this.stick.vector.x;
       moveY = this.stick.vector.y;
@@ -77,8 +82,20 @@ export class InputController {
       }
     }
 
-    let action = this.clicked;
-    this.clicked = false;
+    let action = false;
+    if (this.pendingAction) {
+      this.pendingFrames += 1;
+      const stillToGo = moveX !== 0 || moveY !== 0;
+      const stuck = this.lastPeppa !== null && Math.hypot(peppa.x - this.lastPeppa.x, peppa.y - this.lastPeppa.y) < 0.5;
+      // Arrived, or pressed against the edge of the floor and not moving.
+      if (!stillToGo || (stuck && this.pendingFrames > 2)) {
+        action = true;
+        this.pendingAction = false;
+      } else if (this.pendingFrames > 300) {
+        this.pendingAction = false; // about five seconds: give up quietly
+      }
+    }
+    this.lastPeppa = { x: peppa.x, y: peppa.y };
     for (const key of this.actionKeys) {
       if (Phaser.Input.Keyboard.JustDown(key)) action = true;
     }
@@ -110,7 +127,10 @@ export class InputController {
     // Touch uses the on-screen button; a mouse click on a UI button is that
     // button's, not the kitchen's.
     if (pointer.wasTouch || over.length > 0) return;
-    if (pointer.leftButtonDown()) this.clicked = true;
+    if (!pointer.leftButtonDown()) return;
+    this.pointerTarget = { x: pointer.worldX, y: pointer.worldY + 40 };
+    this.pendingAction = true;
+    this.pendingFrames = 0;
   }
 
   private onGameOut(): void {

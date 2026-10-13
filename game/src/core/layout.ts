@@ -10,7 +10,9 @@ import type { Point, StationId, StationKind } from './types';
 export const LOGICAL_WIDTH = 1280;
 export const LOGICAL_HEIGHT = 720;
 export const PEPPA_SPEED = 260; // logical px per second
-export const INTERACT_RADIUS = 70;
+// Generous on purpose: seven year olds should not have to line Peppa up
+// precisely, and she can act while standing clear of the oven and bowl.
+export const INTERACT_RADIUS = 100;
 export const POINTER_STOP_RADIUS = 24;
 export const ICING_SECONDS = 1;
 export const LAST_SECONDS_WARNING = 15;
@@ -19,7 +21,7 @@ export const PEPPA_START: Point = { x: 640, y: 420 };
 // each station point is still 65 px from the nearest walkable spot.
 // y0 stops Peppa at the front of the counter, so her head stays below the
 // customers standing behind it and never hides them.
-export const WALKABLE = { x0: 165, y0: 290, x1: 1095, y1: 600 };
+export const WALKABLE = { x0: 185, y0: 290, x1: 1070, y1: 600 };
 
 export const STATION_POINTS: Record<StationId, Point> = {
   bowl: { x: 100, y: 330 },

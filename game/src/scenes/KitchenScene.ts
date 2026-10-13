@@ -45,6 +45,8 @@ function depthScale(y: number): number {
 }
 const floorDepth = (footY: number): number => DEPTH.world + footY / 1000;
 const SHADOW = 0x3a2a2a;
+// Wall-side appliances: above the counter, always behind Peppa.
+const SIDE_DEPTH = DEPTH.counter + 1;
 const WALK_FRAME_SECONDS = 0.14;
 // The oven is drawn a little right of its interaction points so Peppa, who
 // stops beside it, never covers the door windows. Its two windows sit at
@@ -108,18 +110,20 @@ export class KitchenScene extends Phaser.Scene {
 
     for (const [id, prop] of Object.entries(PROP) as [StationId, { key: string; x: number; y: number }][]) {
       const img = this.add.image(prop.x, prop.y, prop.key);
-      img.setDepth(floorDepth(prop.y + img.height / 2));
+      // The bowl and chip jar stand against the left wall, so Peppa is always
+      // in front of them; the table and bin out on the floor are sorted with her.
+      img.setDepth(id === 'bowl' || id === 'chipJar' ? SIDE_DEPTH : floorDepth(prop.y + img.height / 2));
       this.stations.set(id, img);
     }
     // Spec 7.5: the chip jar shows only on days that use it.
     this.stations.get('chipJar')?.setVisible(config.chipChance > 0);
 
-    this.add.image(OVEN_X, 390, 'oven').setDepth(floorDepth(540));
+    this.add.image(OVEN_X, 390, 'oven').setDepth(SIDE_DEPTH);
     for (const id of ['oven-0', 'oven-1'] as const) {
       const p = STATION_POINTS[id];
-      this.ovenSlots.push(this.add.image(OVEN_X, p.y, 'oven-slot-baking').setDepth(floorDepth(540) + 0.0001).setVisible(false));
+      this.ovenSlots.push(this.add.image(OVEN_X, p.y, 'oven-slot-baking').setDepth(SIDE_DEPTH + 0.1).setVisible(false));
     }
-    this.ovenBars = this.add.graphics().setDepth(floorDepth(540) + 0.0002);
+    this.ovenBars = this.add.graphics().setDepth(SIDE_DEPTH + 0.2);
     this.icingBar = this.add.graphics().setDepth(DEPTH.ui);
 
     this.add.image(LOGICAL_WIDTH / 2, 200, 'counter').setDepth(DEPTH.counter);
