@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDate } from "@/components/devlog-list";
+import { JsonLd } from "@/components/json-ld";
 import { PlayPill } from "@/components/play-pill";
 import { getAllPosts, getPost } from "@/lib/devlog";
+import { SITE_URL } from "@/lib/site";
 
 // Every post is a folder with an index.html in the static export. Unknown
 // slugs are never rendered: with dynamicParams false they fall through to
@@ -23,7 +25,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: post.title,
     description: post.summary,
     alternates: { canonical: `/devlog/${slug}/` },
-    openGraph: { title: post.title, description: post.summary, type: "article", publishedTime: post.date },
+    openGraph: {
+      title: post.title,
+      description: post.summary,
+      type: "article",
+      publishedTime: post.date,
+      url: `/devlog/${slug}/`,
+      images: [{ url: "/og.png", width: 1200, height: 630 }],
+    },
   };
 }
 
@@ -53,6 +62,23 @@ export default async function PostPage({ params }: Props) {
         </div>
       </article>
       <PlayPill />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          headline: post.title,
+          description: post.summary,
+          datePublished: post.date,
+          url: `${SITE_URL}/devlog/${slug}/`,
+          mainEntityOfPage: `${SITE_URL}/devlog/${slug}/`,
+          image: `${SITE_URL}/og.png`,
+          inLanguage: "en",
+          author: { "@id": `${SITE_URL}/#org` },
+          publisher: { "@id": `${SITE_URL}/#org` },
+          isPartOf: { "@id": `${SITE_URL}/#website` },
+          about: { "@id": `${SITE_URL}/#game` },
+        }}
+      />
     </main>
   );
 }

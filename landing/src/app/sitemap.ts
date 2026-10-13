@@ -1,9 +1,8 @@
 import type { MetadataRoute } from "next";
 import { getAllPosts } from "@/lib/devlog";
+import { SITE_URL } from "@/lib/site";
 
 export const dynamic = "force-static";
-
-const SITE_URL = "https://oinkbuns.verastack.dev";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getAllPosts();
