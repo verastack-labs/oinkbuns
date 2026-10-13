@@ -1,14 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { DESCRIPTION, ORG_NAME, ORG_URL, REPO_URL, SITE_NAME, SITE_URL, TAGLINE } from "@/lib/site";
 import "./globals.css";
-
-const SITE_URL = "https://oinkbuns.verastack.dev";
-const SITE_NAME = "Oinkbuns";
-const TAGLINE = "Bake hot cross buns with Peppa";
-const DESCRIPTION =
-  "A tiny, free kitchen game: mix dough, bake, pipe the cross, and serve hot cross buns with Peppa. Plays on a laptop, tablet, or phone.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -17,7 +13,14 @@ export const metadata: Metadata = {
     template: `%s - ${SITE_NAME}`,
   },
   description: DESCRIPTION,
-  alternates: { canonical: "/" },
+  alternates: {
+    canonical: "/",
+    types: { "application/rss+xml": [{ url: "/devlog/feed.xml", title: `${SITE_NAME} devlog` }] },
+  },
+  keywords: ["hot cross bun game", "Peppa Pig fan game", "kids cooking game", "free browser game for kids", "baking game"],
+  authors: [{ name: ORG_NAME, url: ORG_URL }],
+  creator: ORG_NAME,
+  category: "games",
   robots: { index: true, follow: true },
   icons: { icon: "/art/logo.svg" },
   openGraph: {
@@ -41,6 +44,23 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="h-full antialiased">
       <body className="tiles flex min-h-full flex-col">
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@graph": [
+              { "@type": "Organization", "@id": `${SITE_URL}/#org`, name: ORG_NAME, url: ORG_URL, sameAs: [REPO_URL] },
+              {
+                "@type": "WebSite",
+                "@id": `${SITE_URL}/#website`,
+                url: `${SITE_URL}/`,
+                name: SITE_NAME,
+                description: DESCRIPTION,
+                inLanguage: "en",
+                publisher: { "@id": `${SITE_URL}/#org` },
+              },
+            ],
+          }}
+        />
         <SiteHeader />
         {children}
         <SiteFooter />
