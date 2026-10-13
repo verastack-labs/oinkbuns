@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { sfx } from '../audio';
 import { COLORS, cssColor, FONT_STACK } from './theme';
 
 const HEIGHT = 84; // above the 72 px touch minimum (spec 6.4)
@@ -50,7 +51,10 @@ export class Button extends Phaser.GameObjects.Container {
     this.on(Phaser.Input.Events.POINTER_DOWN, () => {
       scene.tweens.add({ targets: this, scaleX: 0.94, scaleY: 0.94, duration: 70, yoyo: true });
     });
-    this.on(Phaser.Input.Events.POINTER_UP, () => onClick());
+    this.on(Phaser.Input.Events.POINTER_UP, () => {
+      sfx().play('click');
+      onClick();
+    });
 
     scene.add.existing(this);
   }

@@ -2,37 +2,17 @@ import Phaser from 'phaser';
 import { updateProgress } from '../progressStore';
 
 export type SfxId =
-  | 'footstep'
-  | 'take-dough'
-  | 'add-chips'
-  | 'oven-load'
-  | 'oven-ding'
-  | 'burn'
-  | 'bwomp'
-  | 'icing'
-  | 'coin'
-  | 'arrive'
-  | 'nope'
-  | 'leave-sad'
-  | 'day-start'
-  | 'day-end'
-  | 'star'
-  | 'confetti'
-  | 'click'
-  | 'voice-george'
-  | 'voice-suzy'
-  | 'voice-danny'
-  | 'voice-grandpa';
+  | 'footstep' | 'take-dough' | 'add-chips' | 'oven-load' | 'oven-ding'
+  | 'burn' | 'bwomp' | 'icing' | 'coin' | 'arrive' | 'nope' | 'leave-sad'
+  | 'day-start' | 'day-end' | 'star' | 'confetti' | 'click'
+  | 'voice-george' | 'voice-suzy' | 'voice-danny' | 'voice-grandpa';
 export type MusicId = 'rhyme' | 'kitchen';
 
 const MUSIC_VOLUME = 0.55;
 
-/**
- * Named one-shot sounds and one looping music track at a time. In plan 2 no
- * audio file is loaded, so every call finds no key in the cache and is a
- * silent no-op; plan 3 adds the files and this class starts making sound
- * without any caller changing. Mute is global and persisted (spec 6.2).
- */
+// Named one-shot sounds and one looping music track at a time. A key whose
+// file did not load is a silent no-op, so a bad export or a missing format
+// can never throw (spec 6.2; plan 3 Review Focus 3).
 export class Sfx {
   private track: Phaser.Sound.BaseSound | null = null;
   private trackId: MusicId | null = null;
@@ -50,31 +30,27 @@ export class Sfx {
   }
 
   play(id: SfxId, opts: { rate?: number; volume?: number } = {}): void {
-    if (!this.loaded(id)) {
-      return;
-    }
+    if (!this.loaded(id)) return;
     this.sound.play(id, { rate: opts.rate ?? 1, volume: opts.volume ?? 1 });
   }
 
-  // null stops the music. Asking for the track already playing is a no-op.
+  // null stops the music. Asking for the track already playing is a no-op, so
+  // Title to Day Intro keeps the rhyme going and Play again keeps the loop.
   music(id: MusicId | null): void {
-    if (id !== null && id === this.trackId && this.track !== null && this.track.isPlaying) {
-      return;
-    }
+    if (id !== null && id === this.trackId && this.track !== null && this.track.isPlaying) return;
     if (this.track !== null) {
       this.track.stop();
       this.track.destroy();
       this.track = null;
     }
     this.trackId = id;
-    if (id === null || !this.loaded(id)) {
-      return;
-    }
+    if (id === null || !this.loaded(id)) return;
     this.track = this.sound.add(id, { loop: true, volume: MUSIC_VOLUME, rate: this.musicRate });
     this.track.play();
   }
 
-  // 1 is normal; plan 4 uses 1.15 for the last fifteen seconds.
+  // 1 is normal; plan 4 uses 1.15 for the last fifteen seconds. Applies to
+  // the live track and to any track started afterwards.
   setMusicRate(rate: number): void {
     this.musicRate = rate;
     const t = this.track;

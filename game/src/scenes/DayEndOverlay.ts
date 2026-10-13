@@ -46,7 +46,6 @@ export class DayEndOverlay extends Phaser.Scene {
   }
 
   private leaveTo(key: string, data?: object): void {
-    sfx().play('click');
     this.scene.stop(SceneKey.Kitchen);
     this.scene.start(key, data);
   }

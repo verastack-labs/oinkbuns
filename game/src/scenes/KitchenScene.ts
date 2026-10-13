@@ -7,6 +7,8 @@ import { dayById } from '../data/days';
 import { InputController } from '../input/InputController';
 import { COLORS, cssColor, FONT_STACK } from '../ui/theme';
 import { promptText } from '../ui/promptText';
+import { MuteButton } from '../ui/MuteButton';
+import { KitchenFx } from './kitchenFx';
 import { SceneKey } from './keys';
 import type { DayEndData, KitchenData } from './sceneData';
 
@@ -85,6 +87,9 @@ export class KitchenScene extends Phaser.Scene {
   private hintArrow!: Phaser.GameObjects.Image;
   private walkClock = 0;
   private peppaShadow!: Phaser.GameObjects.Ellipse;
+  private peppaRoot!: Phaser.GameObjects.Container;
+  private heldRoot!: Phaser.GameObjects.Container;
+  private fx!: KitchenFx;
 
   constructor() {
     super(SceneKey.Kitchen);
@@ -120,8 +125,13 @@ export class KitchenScene extends Phaser.Scene {
     this.add.image(LOGICAL_WIDTH / 2, 200, 'counter').setDepth(DEPTH.counter);
 
     this.peppaShadow = this.add.ellipse(0, 0, 80, 18, SHADOW, 0.22).setDepth(DEPTH.shadow);
-    this.peppa = this.add.image(0, 0, 'peppa-idle').setOrigin(0.5, 1);
-    this.held = this.add.image(0, 0, 'bun-dough').setVisible(false);
+    // Peppa and her carried item each live in a container: the container takes
+    // the per-frame position and distance scale, while the image inside keeps
+    // scale 1 so the squash and pop animations always return to the right size.
+    this.peppa = this.make.image({ key: 'peppa-idle', add: false }).setOrigin(0.5, 1);
+    this.peppaRoot = this.add.container(0, 0, [this.peppa]);
+    this.held = this.make.image({ key: 'bun-dough', add: false });
+    this.heldRoot = this.add.container(0, 0, [this.held]).setVisible(false);
 
     this.promptLabel = this.add
       .text(0, -51, '', { fontFamily: FONT_STACK, fontSize: '26px', fontStyle: 'bold', color: cssColor(COLORS.text) })
@@ -134,11 +144,28 @@ export class KitchenScene extends Phaser.Scene {
 
     const hud = { fontFamily: FONT_STACK, fontSize: '36px', fontStyle: 'bold', color: cssColor(COLORS.text) };
     this.penniesText = this.add.text(24, 16, '', hud).setDepth(DEPTH.ui);
-    this.clockText = this.add.text(LOGICAL_WIDTH - 24, 16, '', hud).setOrigin(1, 0).setDepth(DEPTH.ui);
+    // The mute button takes the top-right corner, so the clock sits left of it.
+    new MuteButton(this, LOGICAL_WIDTH - 56, 56).setDepth(DEPTH.ui);
+    this.clockText = this.add.text(LOGICAL_WIDTH - 108, 16, '', hud).setOrigin(1, 0).setDepth(DEPTH.ui);
 
     const touch = this.sys.game.device.input.touch;
     this.input2 = new InputController(this, { touch });
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.input2.destroy());
+
+    this.fx = new KitchenFx(this, {
+      peppaTarget: () => this.peppa,
+      peppaMoving: () => this.day.state.peppa.moving,
+      customerTarget: (uid) => this.customers.get(uid)?.root ?? null,
+      stationTarget: (id) => {
+        if (id === 'oven-0') return this.ovenSlots[0] ?? null;
+        if (id === 'oven-1') return this.ovenSlots[1] ?? null;
+        return this.stations.get(id) ?? null;
+      },
+      heldTarget: () => (this.day.state.held ? this.held : null),
+      promptTarget: () => (this.promptBubble.visible ? this.promptBubble : null),
+      prompt: () => this.day.state.prompt,
+      pennyTarget: () => this.penniesText,
+    });
 
     this.render();
     sfx().music('kitchen');
@@ -151,6 +178,7 @@ export class KitchenScene extends Phaser.Scene {
     this.day.tick(dt, intent);
     for (const event of this.day.drain()) {
       this.handleEvent(event);
+      this.fx.handle(event);
     }
     this.walkClock += dt;
     this.render();
@@ -177,22 +205,22 @@ export class KitchenScene extends Phaser.Scene {
     const sc = depthScale(s.peppa.y);
     // A tiny bounce while walking makes the two-frame walk feel springy.
     const bob = s.peppa.moving ? Math.abs(Math.sin(this.walkClock * 14)) * 3 : 0;
-    this.peppa.setTexture(frame).setPosition(s.peppa.x, s.peppa.y - bob).setScale(sc).setFlipX(s.peppa.facing === 'left');
-    this.peppa.setDepth(floorDepth(s.peppa.y));
+    this.peppa.setTexture(frame).setPosition(0, -bob).setFlipX(s.peppa.facing === 'left');
+    this.peppaRoot.setPosition(s.peppa.x, s.peppa.y).setScale(sc).setDepth(floorDepth(s.peppa.y));
     this.peppaShadow.setPosition(s.peppa.x, s.peppa.y - 2).setScale(sc * (1 - bob / 20));
 
     if (s.held) {
       // Carried in front at hand height, on the side she faces, so it never
       // covers a customer's order bubble when she is at the counter.
       const side = s.peppa.facing === 'left' ? -1 : 1;
-      this.held
-        .setTexture(ITEM_TEXTURE[s.held])
+      this.held.setTexture(ITEM_TEXTURE[s.held]);
+      this.heldRoot
         .setPosition(s.peppa.x + side * 52 * sc, s.peppa.y - (70 + bob) * sc)
         .setScale(sc)
         .setDepth(floorDepth(s.peppa.y) + 0.0001)
         .setVisible(true);
     } else {
-      this.held.setVisible(false);
+      this.heldRoot.setVisible(false);
     }
 
     this.renderOven();

@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { LOGICAL_WIDTH } from '../core/layout';
+import { sfx } from '../audio';
 import { Button } from '../ui/Button';
+import { MuteButton } from '../ui/MuteButton';
 import { COLORS, cssColor, FONT_STACK } from '../ui/theme';
 import { SceneKey } from './keys';
 
@@ -19,6 +21,10 @@ export class TitleScene extends Phaser.Scene {
 
   create(): void {
     this.cameras.main.setBackgroundColor(COLORS.wall);
+    // The rhyme plays on the title and carries on into the day intro. Browsers
+    // hold audio until the first tap; Phaser plays it as soon as they allow.
+    sfx().music('rhyme');
+    new MuteButton(this, LOGICAL_WIDTH - 56, 56);
 
     // Vertical rhythm: logo 62-288, title 290-400, tagline 418-452, Play 498-582.
     this.add.image(CX, 175, 'logo').setScale(0.75);

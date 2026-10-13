@@ -1,7 +1,9 @@
 import Phaser from 'phaser';
 import { LOGICAL_HEIGHT, LOGICAL_WIDTH } from '../core/layout';
 import { dayById } from '../data/days';
+import { sfx } from '../audio';
 import { Button } from '../ui/Button';
+import { MuteButton } from '../ui/MuteButton';
 import { Card } from '../ui/Card';
 import { COLORS, cssColor, FONT_STACK } from '../ui/theme';
 import { SceneKey } from './keys';
@@ -21,6 +23,7 @@ export class DayIntroScene extends Phaser.Scene {
   }
 
   create(data: DayIntroData): void {
+    new MuteButton(this, LOGICAL_WIDTH - 56, 56);
     const day = dayById(data.dayId);
     this.cameras.main.setBackgroundColor(COLORS.wall);
 
@@ -62,6 +65,7 @@ export class DayIntroScene extends Phaser.Scene {
       625,
       'Go',
       () => {
+        sfx().play('day-start');
         const kitchen: KitchenData = { dayId: day.id, seed: Date.now() };
         this.scene.start(SceneKey.Kitchen, kitchen);
       },
