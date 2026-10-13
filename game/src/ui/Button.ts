@@ -1,9 +1,11 @@
 import Phaser from 'phaser';
 import { sfx } from '../audio';
+import { CURSOR_HOVER } from './cursors';
 import { COLORS, cssColor, FONT_STACK } from './theme';
 
 const HEIGHT = 84; // above the 72 px touch minimum (spec 6.4)
 const RADIUS = 24;
+const HIT_PAD = 16;
 
 /**
  * A rounded green button with a dark outline and a big label. Fires onClick
@@ -43,11 +45,19 @@ export class Button extends Phaser.GameObjects.Container {
       // Once a Container has a size, Phaser measures pointer positions from its
       // top-left corner (it adds the display origin), so the hit rectangle
       // starts at 0,0 even though the drawing is centred on the container.
-      hitArea: new Phaser.Geom.Rectangle(0, 0, width, HEIGHT),
+      // Padded by HIT_PAD on every side: small fingers and trackpads miss.
+      hitArea: new Phaser.Geom.Rectangle(-HIT_PAD, -HIT_PAD, width + HIT_PAD * 2, HEIGHT + HIT_PAD * 2),
       hitAreaCallback: Phaser.Geom.Rectangle.Contains,
-      useHandCursor: true,
+      cursor: CURSOR_HOVER,
     });
 
+    this.on(Phaser.Input.Events.POINTER_OVER, () => {
+      sfx().play('click', { rate: 1.6, volume: 0.35 });
+      scene.tweens.add({ targets: this, scaleX: 1.05, scaleY: 1.05, duration: 90 });
+    });
+    this.on(Phaser.Input.Events.POINTER_OUT, () => {
+      scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: 90 });
+    });
     this.on(Phaser.Input.Events.POINTER_DOWN, () => {
       scene.tweens.add({ targets: this, scaleX: 0.94, scaleY: 0.94, duration: 70, yoyo: true });
     });

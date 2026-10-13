@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+/* Fredoka, self-hosted (licence: licenses/FONTS.md at the repo root). */
+@font-face {
+  font-family: 'Fredoka';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/Fredoka-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fredoka';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/Fredoka-600.woff2') format('woff2');
+}
+
 /*
  * The only place a colour is defined in the landing package. Components use
  * these through Tailwind utilities (bg-wall, text-ink, bg-good, ...) or

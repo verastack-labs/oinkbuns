@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { sfx } from '../audio';
 import { COLORS } from './theme';
+import { CURSOR_HOVER } from './cursors';
 
 // 72 px round touch target (spec 6.4), drawn from graphics so it needs no
 // texture. Sits in a corner of every screen (spec 6.2: always visible).
@@ -20,7 +21,12 @@ export class MuteButton extends Phaser.GameObjects.Container {
     this.icon = scene.add.graphics();
     this.add([face, this.icon]);
     this.setDepth(DEPTH);
-    this.setInteractive(new Phaser.Geom.Circle(0, 0, RADIUS), Phaser.Geom.Circle.Contains);
+    // The hit circle is larger than the drawn one so it is easy to hit.
+    this.setInteractive({
+      hitArea: new Phaser.Geom.Circle(0, 0, RADIUS + 14),
+      hitAreaCallback: Phaser.Geom.Circle.Contains,
+      cursor: CURSOR_HOVER,
+    });
     this.on(Phaser.Input.Events.POINTER_DOWN, () => this.toggle());
     this.draw(sfx().muted);
     scene.add.existing(this);

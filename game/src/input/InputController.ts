@@ -1,12 +1,21 @@
 import Phaser from 'phaser';
 import { POINTER_STOP_RADIUS } from '../core/layout';
 import type { Intent, Point, PromptLabel } from '../core/types';
+import { sfx } from '../audio';
+import { CURSOR_DEFAULT, CURSOR_HOVER } from '../ui/cursors';
 import { TouchButton } from './TouchButton';
 import { TouchStick } from './TouchStick';
 
 export interface InputOptions {
   touch: boolean;
 }
+
+/**
+ * Maps a click or hover point to where Peppa's feet should go. hit is true when
+ * the point is on (or near) something she can use, which snaps the target to
+ * that station's standing spot and shows the hover cursor.
+ */
+export type ClickResolver = (p: Point) => { target: Point; hit: boolean };
 
 type MoveKeys = Record<'up' | 'down' | 'left' | 'right' | 'w' | 'a' | 's' | 'd', Phaser.Input.Keyboard.Key>;
 
@@ -28,6 +37,8 @@ export class InputController {
   private pendingAction = false;
   private pendingFrames = 0;
   private lastPeppa: Point | null = null;
+  private resolver: ClickResolver | null = null;
+  private hovering = false;
   private readonly stick: TouchStick | null = null;
   private readonly button: TouchButton | null = null;
 
@@ -76,7 +87,10 @@ export class InputController {
       const dx = this.pointerTarget.x - peppa.x;
       const dy = this.pointerTarget.y - peppa.y;
       const len = Math.hypot(dx, dy);
-      if (len > POINTER_STOP_RADIUS) {
+      // Hover-follow stops a little short so Peppa does not jitter under the
+      // cursor; a clicked target is walked to exactly.
+      const stopAt = this.pendingAction ? 3 : POINTER_STOP_RADIUS;
+      if (len > stopAt) {
         moveX = dx / len;
         moveY = dy / len;
       }
@@ -104,6 +118,10 @@ export class InputController {
     return { moveX, moveY, action };
   }
 
+  setClickResolver(resolver: ClickResolver): void {
+    this.resolver = resolver;
+  }
+
   setPromptLabel(label: PromptLabel | null): void {
     this.button?.setLabel(label);
   }
@@ -118,6 +136,14 @@ export class InputController {
 
   private onPointerMove(pointer: Phaser.Input.Pointer): void {
     if (pointer.wasTouch) return;
+    const hit = this.resolver?.({ x: pointer.worldX, y: pointer.worldY }).hit ?? false;
+    if (hit !== this.hovering) {
+      this.hovering = hit;
+      this.scene.input.setDefaultCursor(hit ? CURSOR_HOVER : CURSOR_DEFAULT);
+    }
+    // A pending click keeps its target; moving the mouse away must not
+    // redirect Peppa before she gets there.
+    if (this.pendingAction) return;
     // Feet are at the sprite's bottom, so aim them a little below the cursor
     // tip: the cursor then sits on Peppa's body, which feels right.
     this.pointerTarget = { x: pointer.worldX, y: pointer.worldY + 40 };
@@ -128,7 +154,10 @@ export class InputController {
     // button's, not the kitchen's.
     if (pointer.wasTouch || over.length > 0) return;
     if (!pointer.leftButtonDown()) return;
-    this.pointerTarget = { x: pointer.worldX, y: pointer.worldY + 40 };
+    const p = { x: pointer.worldX, y: pointer.worldY };
+    const resolved = this.resolver?.(p);
+    this.pointerTarget = resolved?.hit ? resolved.target : { x: p.x, y: p.y + 40 };
+    sfx().play('click', resolved?.hit ? { rate: 1.25, volume: 0.6 } : { rate: 0.8, volume: 0.35 });
     this.pendingAction = true;
     this.pendingFrames = 0;
   }

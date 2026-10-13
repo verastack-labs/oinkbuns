@@ -3,6 +3,7 @@ import { ART, AUDIO } from '../assets/manifest';
 import { initSfx } from '../audio';
 import { LOGICAL_HEIGHT, LOGICAL_WIDTH } from '../core/layout';
 import { generatePlaceholders } from '../entities/placeholders';
+import { loadFonts } from '../ui/fonts';
 import { COLORS } from '../ui/theme';
 import { SceneKey } from './keys';
 
@@ -52,6 +53,10 @@ export class BootScene extends Phaser.Scene {
     // Only fills keys that did not load.
     generatePlaceholders(this);
     initSfx(this.game);
-    this.scene.start(SceneKey.Title);
+    // Text is rendered to a texture when created, so wait for Fredoka first.
+    void loadFonts().then((ready) => {
+      if (!ready) console.warn('[boot] Fredoka did not load in time; using the fallback font');
+      this.scene.start(SceneKey.Title);
+    });
   }
 }

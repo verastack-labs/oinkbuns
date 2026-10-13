@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 import { sfx } from '../audio';
 import { Day } from '../core/day';
-import { counterId, LOGICAL_WIDTH, STATION_POINTS, WALKABLE } from '../core/layout';
-import type { CustomerState, DayEvent, ItemKind, StationId } from '../core/types';
+import { clampToWalkable, counterId, LOGICAL_WIDTH, STATION_POINTS, WALKABLE } from '../core/layout';
+import type { CustomerState, DayEvent, ItemKind, Point, StationId } from '../core/types';
 import { dayById } from '../data/days';
 import { InputController } from '../input/InputController';
 import { COLORS, cssColor, FONT_STACK } from '../ui/theme';
@@ -92,6 +92,7 @@ export class KitchenScene extends Phaser.Scene {
   private peppaRoot!: Phaser.GameObjects.Container;
   private heldRoot!: Phaser.GameObjects.Container;
   private fx!: KitchenFx;
+  private ovenImage: Phaser.GameObjects.Image | null = null;
 
   constructor() {
     super(SceneKey.Kitchen);
@@ -118,7 +119,7 @@ export class KitchenScene extends Phaser.Scene {
     // Spec 7.5: the chip jar shows only on days that use it.
     this.stations.get('chipJar')?.setVisible(config.chipChance > 0);
 
-    this.add.image(OVEN_X, 390, 'oven').setDepth(SIDE_DEPTH);
+    this.ovenImage = this.add.image(OVEN_X, 390, 'oven').setDepth(SIDE_DEPTH);
     for (const id of ['oven-0', 'oven-1'] as const) {
       const p = STATION_POINTS[id];
       this.ovenSlots.push(this.add.image(OVEN_X, p.y, 'oven-slot-baking').setDepth(SIDE_DEPTH + 0.1).setVisible(false));
@@ -154,6 +155,7 @@ export class KitchenScene extends Phaser.Scene {
 
     const touch = this.sys.game.device.input.touch;
     this.input2 = new InputController(this, { touch });
+    this.input2.setClickResolver((p) => this.resolveClick(p));
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.input2.destroy());
 
     this.fx = new KitchenFx(this, {
@@ -179,6 +181,8 @@ export class KitchenScene extends Phaser.Scene {
     const dt = delta / 1000;
     const s = this.day.state;
     const intent = this.input2.read({ x: s.peppa.x, y: s.peppa.y });
+    // Pressing act with nothing to do gets a gentle no rather than silence.
+    if (intent.action && !s.prompt && !s.icing.active) sfx().play('nope', { volume: 0.45 });
     this.day.tick(dt, intent);
     for (const event of this.day.drain()) {
       this.handleEvent(event);
@@ -389,6 +393,28 @@ export class KitchenScene extends Phaser.Scene {
     ellipse(OVEN_X, 538, 190, 22); // oven
     ellipse(520, 703, 210, 16); // icing table
     ellipse(820, 704, 74, 14); // bin
+  }
+
+  /**
+   * Generous click targets: anywhere on or near a station or a waiting
+   * customer counts as clicking it, and sends Peppa to the spot she uses it
+   * from. Anything else is a plain walk to the clicked floor.
+   */
+  private resolveClick(p: Point): { target: Point; hit: boolean } {
+    const PAD = 30;
+    const near = (b: Phaser.Geom.Rectangle): boolean =>
+      p.x >= b.left - PAD && p.x <= b.right + PAD && p.y >= b.top - PAD && p.y <= b.bottom + PAD;
+    const spot = (id: StationId): { target: Point; hit: boolean } => ({ target: clampToWalkable(STATION_POINTS[id]), hit: true });
+
+    for (const c of this.day.state.queue) {
+      const view = this.customers.get(c.uid);
+      if (view && near(view.root.getBounds())) return spot(counterId(c.spot));
+    }
+    for (const [id, img] of this.stations) {
+      if (img.visible && near(img.getBounds())) return spot(id);
+    }
+    if (this.ovenImage && near(this.ovenImage.getBounds())) return spot(p.y < 390 ? 'oven-0' : 'oven-1');
+    return { target: { x: p.x, y: p.y + 40 }, hit: false };
   }
 
   private bar(g: Phaser.GameObjects.Graphics, x: number, y: number, w: number, fraction: number, color: number): void {

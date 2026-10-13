@@ -25,6 +25,8 @@
       }
       #game canvas {
         display: block;
+        /* The custom pink arrow; tip at (3, 3). */
+        cursor: url('assets/art/cursor.svg') 3 3, auto;
       }
       /* Spec 5.3: on a phone held upright, ask for landscape. CSS alone, so
          it appears before any script runs. */
@@ -58,6 +60,20 @@
       @keyframes turn {
         0%, 30% { transform: rotate(0deg); }
         60%, 100% { transform: rotate(-90deg); }
+      }
+      @font-face {
+        font-family: 'Fredoka';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url('fonts/Fredoka-400.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Fredoka';
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: url('fonts/Fredoka-600.woff2') format('woff2');
       }
     </style>
   </head>
