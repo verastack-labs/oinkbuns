@@ -1,0 +1,12 @@
+packages:
+  - landing
+  - game
+
+# Which dependencies may run install scripts. Everything defaults to no.
+# esbuild needs its postinstall to fetch the platform binary; vite and vitest
+# will not run without it. sharp (optional, via next) and unrs-resolver (via
+# eslint-config-next) are not needed for a static export.
+allowBuilds:
+  esbuild: true
+  sharp: false
+  unrs-resolver: false

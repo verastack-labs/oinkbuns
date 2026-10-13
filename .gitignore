@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# build outputs
+dist/
+.next/
+.next-build/
+out/
+
+# logs
+*.log
+
+# typescript
+*.tsbuildinfo
+# written by next dev and next build
+next-env.d.ts
+
+# os
+.DS_Store
