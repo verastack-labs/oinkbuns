@@ -2,42 +2,45 @@
 
 /* Fredoka, self-hosted (licence: licenses/FONTS.md at the repo root). */
 @font-face {
-  font-family: 'Fredoka';
+  font-family: "Fredoka";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/Fredoka-400.woff2') format('woff2');
+  src: url("/fonts/Fredoka-400.woff2") format("woff2");
 }
 @font-face {
-  font-family: 'Fredoka';
+  font-family: "Fredoka";
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url('/fonts/Fredoka-600.woff2') format('woff2');
+  src: url("/fonts/Fredoka-600.woff2") format("woff2");
 }
 
 /*
  * The only place a colour is defined in the landing package. Components use
- * these through Tailwind utilities (bg-wall, text-ink, bg-good, ...) or
- * var(--color-...). The hex values mirror game/src/ui/theme.ts and
+ * these through Tailwind utilities (bg-wall, text-ink, ...) or var(--color-...).
+ * The hex values mirror game/src/ui/theme.ts and
  * oinkbuns-internal/assets-src/palette.md; change all three together.
- * Fredoka arrives with the art pass; until then the sans stack falls back
- * to the system rounded face where one exists.
  */
 @theme {
   --color-peppa-pink: #f4a6c6;
   --color-peppa-red: #e84a5f;
   --color-george-blue: #4a90e2;
   --color-wall: #fff1d6;
+  --color-tile: #f3e2c2;
   --color-floor: #d9a066;
+  --color-wood: #b8824a;
   --color-outline: #3a2a2a;
   --color-bun: #c8803a;
   --color-cream: #fff8e7;
   --color-ink: #3a2a2a;
   --color-good: #6cc24a;
+  --color-good-dark: #4f9a33;
   --color-bad: #e84a5f;
   --color-sky: #9ad7f5;
   --color-grass: #7bc96f;
+  --color-star: #ffd23f;
+  --color-danny: #8e6bd1;
 
   --font-sans: "Fredoka", ui-rounded, system-ui, sans-serif;
 }
@@ -46,4 +49,245 @@ html {
   background-color: var(--color-wall);
   color: var(--color-ink);
   font-family: var(--font-sans);
+  /* Only two weights are shipped; never let the browser fake a bolder one. */
+  font-synthesis: none;
+  /* The same pink arrow cursor as the game; tip at (3, 3). */
+  cursor: url("/art/cursor.svg") 3 3, auto;
+}
+
+a,
+button,
+summary,
+[role="button"] {
+  cursor: url("/art/cursor-hover.svg") 3 3, pointer;
+}
+
+/* ---------- The kitchen as a page ---------- */
+
+/* Wall tiles: the game's grout grid, drawn with two gradients. */
+.tiles {
+  background-color: var(--color-wall);
+  background-image:
+    linear-gradient(var(--color-tile) 2px, transparent 2px),
+    linear-gradient(90deg, var(--color-tile) 2px, transparent 2px);
+  background-size: 80px 40px;
+}
+
+/* Floorboards with staggered seams, like the kitchen floor. */
+.planks {
+  background-color: var(--color-floor);
+  background-image:
+    linear-gradient(var(--color-wood) 2px, transparent 2px),
+    linear-gradient(90deg, var(--color-wood) 2px, transparent 2px);
+  background-size: 100% 48px, 240px 48px;
+}
+
+/* The counter edge between wall and floor. */
+.counter-edge {
+  height: 22px;
+  background:
+    linear-gradient(var(--color-floor) 0 6px, var(--color-wood) 6px 14px, #9a6a3a 14px);
+  border-top: 3px solid var(--color-outline);
+  border-bottom: 3px solid var(--color-outline);
+}
+
+/* ---------- Game-y pieces ---------- */
+
+/* Chunky outlined title, like the in-game title. */
+.title-pop {
+  color: var(--color-peppa-red);
+  -webkit-text-stroke: 10px var(--color-outline);
+  paint-order: stroke fill;
+  text-shadow: 0 7px 0 rgb(58 42 42 / 0.25);
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.heading-pop {
+  color: var(--color-peppa-red);
+  -webkit-text-stroke: 6px var(--color-outline);
+  paint-order: stroke fill;
+  text-shadow: 0 4px 0 rgb(58 42 42 / 0.2);
+  line-height: 1.05;
+}
+
+/* A squishy 3D button: a solid shadow underneath, lifts on hover, presses on click. */
+.btn-game {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border: 4px solid var(--color-outline);
+  border-radius: 9999px;
+  background: var(--color-good);
+  color: var(--color-ink);
+  font-weight: 600;
+  box-shadow: 0 7px 0 var(--color-outline), inset 0 -6px 0 var(--color-good-dark);
+  transform: translateY(0);
+  transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+}
+.btn-game:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 10px 0 var(--color-outline), inset 0 -6px 0 var(--color-good-dark);
+  filter: saturate(1.1);
+}
+.btn-game:active {
+  transform: translateY(6px);
+  box-shadow: 0 1px 0 var(--color-outline), inset 0 -3px 0 var(--color-good-dark);
+}
+.btn-game:focus-visible,
+.card-game:focus-visible {
+  outline: 4px solid var(--color-george-blue);
+  outline-offset: 6px;
+}
+
+.card-game {
+  background: var(--color-cream);
+  border: 4px solid var(--color-outline);
+  border-radius: 1.75rem;
+  box-shadow: 0 7px 0 rgb(58 42 42 / 0.28);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 3px solid var(--color-outline);
+  border-radius: 9999px;
+  background: var(--color-cream);
+  padding: 0.2rem 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 3px 0 rgb(58 42 42 / 0.25);
+}
+
+/* A keyboard keycap for the controls row. */
+.key {
+  display: inline-flex;
+  min-width: 2.4rem;
+  height: 2.4rem;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--color-outline);
+  border-radius: 0.6rem;
+  background: var(--color-cream);
+  padding: 0 0.6rem;
+  font-weight: 600;
+  box-shadow: 0 4px 0 var(--color-outline);
+}
+
+/* A speech bubble with a tail pointing down-left. */
+.bubble {
+  position: relative;
+  border: 3px solid var(--color-outline);
+  border-radius: 1.25rem;
+  background: white;
+  padding: 0.5rem 0.9rem;
+  font-weight: 600;
+}
+.bubble::after {
+  content: "";
+  position: absolute;
+  left: 1.4rem;
+  bottom: -12px;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-right: 3px solid var(--color-outline);
+  border-bottom: 3px solid var(--color-outline);
+  transform: rotate(45deg);
+}
+
+/* ---------- Motion (all of it stops under reduce-motion) ---------- */
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes wobble {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+@keyframes float-bun {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-16px) rotate(12deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+.anim-bob { animation: bob 2.6s ease-in-out infinite; }
+.anim-wobble { animation: wobble 3s ease-in-out infinite; }
+.anim-float { animation: float-bun 4s ease-in-out infinite; }
+
+.hop {
+  transition: transform 160ms ease;
+}
+.hop:hover {
+  transform: translateY(-8px) rotate(-2deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-bob,
+  .anim-wobble,
+  .anim-float {
+    animation: none;
+  }
+  .btn-game,
+  .hop {
+    transition: none;
+  }
+  .btn-game:hover,
+  .hop:hover {
+    transform: none;
+  }
+}
+
+/* ---------- Rendered Markdown in devlog posts ---------- */
+.post-body {
+  font-size: 1.15rem;
+  line-height: 1.75;
+}
+.post-body h2 {
+  margin-top: 2.25rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--color-peppa-red);
+}
+.post-body h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.375rem;
+  font-weight: 600;
+}
+.post-body p,
+.post-body ul,
+.post-body ol,
+.post-body blockquote {
+  margin-bottom: 1rem;
+}
+.post-body ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+.post-body ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+.post-body strong {
+  font-weight: 600;
+}
+.post-body a {
+  color: var(--color-george-blue);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.2em;
+}
+.post-body blockquote {
+  border-left: 6px solid var(--color-peppa-pink);
+  padding-left: 1rem;
+}
+.post-body code {
+  background-color: var(--color-wall);
+  border-radius: 0.35rem;
+  padding: 0.1em 0.35em;
+  font-size: 0.95em;
 }
