@@ -51,7 +51,7 @@ export const ART: ArtAsset[] = [
   art('oven-slot-burnt', 120, 80),
   art('icing-table', 220, 110),
   art('bin', 90, 110),
-  art('counter', 820, 110),
+  art('counter', 1280, 110),
   art('bun-dough', 64, 64),
   art('bun-chip-dough', 64, 64),
   art('bun-baked', 64, 64),

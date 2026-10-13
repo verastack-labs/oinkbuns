@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { sfx } from '../audio';
 import { Day } from '../core/day';
-import { counterId, LOGICAL_WIDTH, STATION_POINTS } from '../core/layout';
+import { counterId, LOGICAL_WIDTH, STATION_POINTS, WALKABLE } from '../core/layout';
 import type { CustomerState, DayEvent, ItemKind, StationId } from '../core/types';
 import { dayById } from '../data/days';
 import { InputController } from '../input/InputController';
@@ -28,7 +28,21 @@ const ITEM_TEXTURE: Record<ItemKind, string> = {
   'chip-hot-cross': 'bun-chip-hot-cross',
 };
 
-const DEPTH = { floor: 0, props: 10, customers: 20, counter: 30, peppa: 40, ui: 100 } as const;
+const DEPTH = { floor: 0, shade: 1, shadow: 2, customers: 20, counter: 30, world: 40, ui: 100 } as const;
+
+/**
+ * A little perspective: things further back (higher on screen) are drawn
+ * smaller, and everything on the floor is sorted front to back by where it
+ * touches the floor, so Peppa can walk behind the icing table.
+ */
+const NEAR_SCALE = 1.1;
+const FAR_SCALE = 0.86;
+function depthScale(y: number): number {
+  const t = (y - WALKABLE.y0) / (WALKABLE.y1 - WALKABLE.y0);
+  return FAR_SCALE + Math.min(1, Math.max(0, t)) * (NEAR_SCALE - FAR_SCALE);
+}
+const floorDepth = (footY: number): number => DEPTH.world + footY / 1000;
+const SHADOW = 0x3a2a2a;
 const WALK_FRAME_SECONDS = 0.14;
 // The oven is drawn a little right of its interaction points so Peppa, who
 // stops beside it, never covers the door windows. Its two windows sit at
@@ -70,6 +84,7 @@ export class KitchenScene extends Phaser.Scene {
   private clockText!: Phaser.GameObjects.Text;
   private hintArrow!: Phaser.GameObjects.Image;
   private walkClock = 0;
+  private peppaShadow!: Phaser.GameObjects.Ellipse;
 
   constructor() {
     super(SceneKey.Kitchen);
@@ -84,25 +99,29 @@ export class KitchenScene extends Phaser.Scene {
     this.walkClock = 0;
 
     this.add.image(0, 0, 'kitchen-bg').setOrigin(0).setDepth(DEPTH.floor);
+    this.drawShading();
 
     for (const [id, prop] of Object.entries(PROP) as [StationId, { key: string; x: number; y: number }][]) {
-      this.stations.set(id, this.add.image(prop.x, prop.y, prop.key).setDepth(DEPTH.props));
+      const img = this.add.image(prop.x, prop.y, prop.key);
+      img.setDepth(floorDepth(prop.y + img.height / 2));
+      this.stations.set(id, img);
     }
     // Spec 7.5: the chip jar shows only on days that use it.
     this.stations.get('chipJar')?.setVisible(config.chipChance > 0);
 
-    this.add.image(OVEN_X, 390, 'oven').setDepth(DEPTH.props);
+    this.add.image(OVEN_X, 390, 'oven').setDepth(floorDepth(540));
     for (const id of ['oven-0', 'oven-1'] as const) {
       const p = STATION_POINTS[id];
-      this.ovenSlots.push(this.add.image(OVEN_X, p.y, 'oven-slot-baking').setDepth(DEPTH.props + 1).setVisible(false));
+      this.ovenSlots.push(this.add.image(OVEN_X, p.y, 'oven-slot-baking').setDepth(floorDepth(540) + 0.0001).setVisible(false));
     }
-    this.ovenBars = this.add.graphics().setDepth(DEPTH.props + 2);
+    this.ovenBars = this.add.graphics().setDepth(floorDepth(540) + 0.0002);
     this.icingBar = this.add.graphics().setDepth(DEPTH.ui);
 
     this.add.image(LOGICAL_WIDTH / 2, 200, 'counter').setDepth(DEPTH.counter);
 
-    this.peppa = this.add.image(0, 0, 'peppa-idle').setOrigin(0.5, 1).setDepth(DEPTH.peppa);
-    this.held = this.add.image(0, 0, 'bun-dough').setDepth(DEPTH.peppa + 1).setVisible(false);
+    this.peppaShadow = this.add.ellipse(0, 0, 80, 18, SHADOW, 0.22).setDepth(DEPTH.shadow);
+    this.peppa = this.add.image(0, 0, 'peppa-idle').setOrigin(0.5, 1);
+    this.held = this.add.image(0, 0, 'bun-dough').setVisible(false);
 
     this.promptLabel = this.add
       .text(0, -51, '', { fontFamily: FONT_STACK, fontSize: '26px', fontStyle: 'bold', color: cssColor(COLORS.text) })
@@ -155,14 +174,23 @@ export class KitchenScene extends Phaser.Scene {
 
     // Peppa: two-frame walk, flipped to face where she is going.
     const frame = s.peppa.moving ? (Math.floor(this.walkClock / WALK_FRAME_SECONDS) % 2 === 0 ? 'peppa-walk1' : 'peppa-walk2') : 'peppa-idle';
-    this.peppa.setTexture(frame).setPosition(s.peppa.x, s.peppa.y).setFlipX(s.peppa.facing === 'left');
-    this.peppa.setDepth(DEPTH.peppa + s.peppa.y / 1000);
+    const sc = depthScale(s.peppa.y);
+    // A tiny bounce while walking makes the two-frame walk feel springy.
+    const bob = s.peppa.moving ? Math.abs(Math.sin(this.walkClock * 14)) * 3 : 0;
+    this.peppa.setTexture(frame).setPosition(s.peppa.x, s.peppa.y - bob).setScale(sc).setFlipX(s.peppa.facing === 'left');
+    this.peppa.setDepth(floorDepth(s.peppa.y));
+    this.peppaShadow.setPosition(s.peppa.x, s.peppa.y - 2).setScale(sc * (1 - bob / 20));
 
     if (s.held) {
       // Carried in front at hand height, on the side she faces, so it never
       // covers a customer's order bubble when she is at the counter.
       const side = s.peppa.facing === 'left' ? -1 : 1;
-      this.held.setTexture(ITEM_TEXTURE[s.held]).setPosition(s.peppa.x + side * 52, s.peppa.y - 70).setVisible(true);
+      this.held
+        .setTexture(ITEM_TEXTURE[s.held])
+        .setPosition(s.peppa.x + side * 52 * sc, s.peppa.y - (70 + bob) * sc)
+        .setScale(sc)
+        .setDepth(floorDepth(s.peppa.y) + 0.0001)
+        .setVisible(true);
     } else {
       this.held.setVisible(false);
     }
@@ -283,7 +311,7 @@ export class KitchenScene extends Phaser.Scene {
     this.promptBg.setScale(Math.max(1, (this.promptLabel.width + 44) / 150), 0.75);
     const half = (this.promptBg.displayWidth) / 2;
     let x = s.peppa.x;
-    let y = s.peppa.y - 142;
+    let y = s.peppa.y - 142 * depthScale(s.peppa.y);
     if (y - 82 < 110) {
       x = s.peppa.x + (s.peppa.x > LOGICAL_WIDTH / 2 ? -1 : 1) * (60 + half);
       y = s.peppa.y - 10;
@@ -303,6 +331,32 @@ export class KitchenScene extends Phaser.Scene {
     const p = STATION_POINTS[hint];
     const below = hint.startsWith('counter');
     this.hintArrow.setVisible(true).setPosition(p.x, below ? p.y + 75 : p.y - 110).setAngle(below ? -90 : 90);
+  }
+
+  /**
+   * Static depth cues drawn once over the backdrop: the floor darkens toward
+   * the wall, the counter casts a shadow onto the floor, and every prop sits
+   * on a soft contact shadow.
+   */
+  private drawShading(): void {
+    const g = this.add.graphics().setDepth(DEPTH.shade);
+    const floorTop = 264;
+    for (let i = 0; i < 12; i += 1) {
+      g.fillStyle(SHADOW, 0.13 * (1 - i / 12));
+      g.fillRect(0, floorTop + i * 14, LOGICAL_WIDTH, 14);
+    }
+    // Under the counter's front edge.
+    g.fillStyle(SHADOW, 0.18);
+    g.fillRect(0, 255, LOGICAL_WIDTH, 10);
+
+    const shadows = this.add.graphics().setDepth(DEPTH.shadow);
+    shadows.fillStyle(SHADOW, 0.2);
+    const ellipse = (x: number, y: number, w: number, h: number) => shadows.fillEllipse(x, y, w, h);
+    ellipse(75, 372, 120, 20); // bowl
+    if (this.day.config.chipChance > 0) ellipse(75, 503, 80, 16); // chip jar
+    ellipse(OVEN_X, 538, 190, 22); // oven
+    ellipse(520, 703, 210, 16); // icing table
+    ellipse(820, 704, 74, 14); // bin
   }
 
   private bar(g: Phaser.GameObjects.Graphics, x: number, y: number, w: number, fraction: number, color: number): void {
