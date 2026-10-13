@@ -1,0 +1,69 @@
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  # So the site can be republished without an empty commit.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time, and never cancel one mid-flight. A cancelled deploy
+# can leave the published site in a state that matches no commit.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # No `version` here on purpose. `packageManager` in package.json already
+      # pins pnpm, and specifying both makes the action fail.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Everything that can fail cheaply runs before anything is published.
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+
+      - name: Build
+        env:
+          # Served from the root of its own domain, oinkbuns.verastack.dev.
+          # The game's /play/ prefix is set in game/vite.config.ts.
+          NEXT_PUBLIC_BASE_PATH: ""
+        run: pnpm build
+
+      # Merges landing/.next-build and game/dist into dist/, and writes CNAME
+      # and .nojekyll there. Fails if either entry page is missing.
+      - run: pnpm assemble
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

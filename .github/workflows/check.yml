@@ -1,0 +1,38 @@
+name: Check
+
+# The Pages workflow runs these too, but only on `main`, which means a problem
+# is found at publish time with the broken commit already merged. This runs the
+# same gate on the pull request, where it is still cheap to fix.
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # No `version` here on purpose. `packageManager` in package.json already
+      # pins pnpm, and specifying both makes the action fail rather than
+      # choosing one.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+
+      # Build and assemble too. Typechecking passes on things the static
+      # export still refuses, and a missing entry page should fail here
+      # rather than on the deploy that follows the merge.
+      - name: Build
+        env:
+          NEXT_PUBLIC_BASE_PATH: ""
+        run: pnpm build
+
+      - run: pnpm assemble
