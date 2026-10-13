@@ -1,0 +1,16 @@
+{
+  "id": 1,
+  "name": "First Bake",
+  "twist": "Learn the kitchen and serve four customers.",
+  "end": { "type": "customers", "count": 4 },
+  "customers": ["george", "suzy"],
+  "maxOrderSize": 1,
+  "maxQueue": 1,
+  "spawnGapSeconds": [3, 5],
+  "chipChance": 0,
+  "bakeSeconds": 4,
+  "burnWindowSeconds": null,
+  "patienceMultiplier": 1,
+  "tutorial": true,
+  "stars": [3, 5, 6]
+}

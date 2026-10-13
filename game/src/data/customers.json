@@ -1,0 +1,34 @@
+{
+  "george": {
+    "id": "george",
+    "name": "George",
+    "orderSizes": [1],
+    "patienceSeconds": 40,
+    "voicePitch": 0.8,
+    "line": "Dine-saw! Grrr!"
+  },
+  "suzy": {
+    "id": "suzy",
+    "name": "Suzy Sheep",
+    "orderSizes": [1, 2],
+    "patienceSeconds": 30,
+    "voicePitch": 1.2,
+    "line": "Baa! Lovely!"
+  },
+  "danny": {
+    "id": "danny",
+    "name": "Danny Dog",
+    "orderSizes": [2],
+    "patienceSeconds": 20,
+    "voicePitch": 1.1,
+    "line": "Woof! Thanks!"
+  },
+  "grandpa": {
+    "id": "grandpa",
+    "name": "Grandpa Pig",
+    "orderSizes": [3],
+    "patienceSeconds": 35,
+    "voicePitch": 0.7,
+    "line": "Ho ho, splendid!"
+  }
+}

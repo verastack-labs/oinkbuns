@@ -1,0 +1,80 @@
+import type { MusicId, SfxId } from '../audio/Sfx';
+
+export interface ArtAsset {
+  key: string;
+  url: string;
+  width: number;
+  height: number;
+}
+
+// Sizes are logical pixels. In plan 2 placeholders.ts draws a flat shape of
+// this size for every key; plan 3 loads the SVG at `url` at the same size,
+// so entity code written against these sizes never changes.
+const art = (key: string, width: number, height: number): ArtAsset => ({
+  key,
+  url: `assets/art/${key}.svg`,
+  width,
+  height,
+});
+
+export const ART: ArtAsset[] = [
+  art('peppa-idle', 120, 150),
+  art('peppa-walk1', 120, 150),
+  art('peppa-walk2', 120, 150),
+  art('peppa-happy', 120, 150),
+  art('george-idle', 100, 120),
+  art('george-walk1', 100, 120),
+  art('george-walk2', 100, 120),
+  art('george-happy', 100, 120),
+  art('george-sad', 100, 120),
+  art('suzy-idle', 110, 140),
+  art('suzy-walk1', 110, 140),
+  art('suzy-walk2', 110, 140),
+  art('suzy-happy', 110, 140),
+  art('suzy-sad', 110, 140),
+  art('danny-idle', 110, 140),
+  art('danny-walk1', 110, 140),
+  art('danny-walk2', 110, 140),
+  art('danny-happy', 110, 140),
+  art('danny-sad', 110, 140),
+  art('grandpa-idle', 130, 160),
+  art('grandpa-walk1', 130, 160),
+  art('grandpa-walk2', 130, 160),
+  art('grandpa-happy', 130, 160),
+  art('grandpa-sad', 130, 160),
+  art('kitchen-bg', 1280, 720),
+  art('bowl', 130, 90),
+  art('chip-jar', 90, 110),
+  art('oven', 200, 300),
+  art('oven-slot-baking', 120, 80),
+  art('oven-slot-ready', 120, 80),
+  art('oven-slot-burnt', 120, 80),
+  art('icing-table', 220, 110),
+  art('bin', 90, 110),
+  art('counter', 820, 110),
+  art('bun-dough', 64, 64),
+  art('bun-chip-dough', 64, 64),
+  art('bun-baked', 64, 64),
+  art('bun-chip-baked', 64, 64),
+  art('bun-burnt', 64, 64),
+  art('bun-hot-cross', 64, 64),
+  art('bun-chip-hot-cross', 64, 64),
+  art('bubble', 150, 110),
+  art('arrow', 80, 80),
+  art('star', 64, 64),
+  art('star-empty', 64, 64),
+  art('penny', 40, 40),
+  art('logo', 360, 300),
+  art('cloud-sad', 130, 80),
+  art('sparkle', 32, 32),
+  art('steam', 32, 32),
+  art('smoke', 40, 40),
+];
+
+export interface AudioAsset {
+  key: SfxId | MusicId;
+  urls: string[];
+}
+
+// Empty until plan 3 exports the clips. Sfx treats a missing key as silence.
+export const AUDIO: AudioAsset[] = [];
