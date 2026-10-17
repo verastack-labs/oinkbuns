@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/`, lastModified: newest, changeFrequency: "monthly", priority: 1 },
     { url: `${SITE_URL}/play/`, changeFrequency: "monthly", priority: 0.9 },
     { url: `${SITE_URL}/devlog/`, lastModified: newest, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${SITE_URL}/privacy/`, changeFrequency: "yearly", priority: 0.5 },
     ...posts.map((post) => ({
       url: `${SITE_URL}/devlog/${post.slug}/`,
       lastModified: post.date,
