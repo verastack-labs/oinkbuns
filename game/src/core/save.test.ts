@@ -7,6 +7,7 @@ import {
   SAVE_KEY,
   saveProgress,
   withStars,
+  hasSticker,
   type KeyValueStore,
 } from './save';
 
@@ -67,6 +68,13 @@ describe('save', () => {
     saveProgress(store, progress);
     expect(JSON.parse(store.getItem(SAVE_KEY) ?? '')).toEqual(progress);
     expect(loadProgress(store)).toEqual(progress);
+  });
+
+  it('hasSticker is true only for days finished with three stars', () => {
+    const p = withStars(withStars(emptyProgress(), 1, 3), 2, 2);
+    expect(hasSticker(p, 1)).toBe(true);
+    expect(hasSticker(p, 2)).toBe(false);
+    expect(hasSticker(p, 3)).toBe(false);
   });
 
   it('withStars keeps the best result and never lowers it', () => {

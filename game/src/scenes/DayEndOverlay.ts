@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { sfx } from '../audio';
 import { LOGICAL_HEIGHT, LOGICAL_WIDTH } from '../core/layout';
-import { isDayUnlocked, withStars } from '../core/save';
+import { hasSticker, isDayUnlocked, withStars } from '../core/save';
 import { DAYS } from '../data/days';
 import { confetti } from '../fx/particles';
 import { reduceMotion } from '../fx/reduceMotion';
@@ -35,6 +35,7 @@ export class DayEndOverlay extends Phaser.Scene {
   }
 
   create(data: DayEndData): void {
+    const hadSticker = hasSticker(getProgress(), data.dayId);
     if (data.pennies > 0) {
       updateProgress((p) => withStars(p, data.dayId, data.stars));
     }
@@ -59,6 +60,19 @@ export class DayEndOverlay extends Phaser.Scene {
         sfx().play('confetti');
         confetti(this, CX, CY - 200);
       });
+    }
+
+    // Three stars earns the day's sticker; it pops in once, the first time.
+    if (data.stars === 3 && data.dayId >= 1 && data.dayId <= 5) {
+      const sticker = this.add.image(CX + 250, CY - 120, `sticker-${data.dayId}`).setAngle(-12);
+      this.add
+        .text(CX + 250, CY - 56, hadSticker ? 'Sticker!' : 'New sticker!', { ...text, fontSize: '22px', fontStyle: 'bold' })
+        .setOrigin(0.5);
+      if (!hadSticker && !reduceMotion()) {
+        sticker.setScale(0);
+        this.tweens.add({ targets: sticker, scale: 1.2, duration: 380, delay: 1000, ease: 'Back.easeOut' });
+        this.time.delayedCall(1000, () => sfx().play('star', { rate: 1.4 }));
+      }
     }
 
     const choices: Choice[] = [];

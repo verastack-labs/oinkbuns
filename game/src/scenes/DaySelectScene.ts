@@ -62,6 +62,9 @@ export class DaySelectScene extends Phaser.Scene {
       },
       { width: 180 },
     );
+    new Button(this, LOGICAL_WIDTH - 160, LOGICAL_HEIGHT - 60, 'Stickers', () => this.scene.start(SceneKey.StickerBook), {
+      width: 240,
+    });
   }
 
   private addCard(x: number, y: number, day: DayConfig, unlocked: boolean, best: StarCount): void {
