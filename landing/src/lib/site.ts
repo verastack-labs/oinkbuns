@@ -8,6 +8,7 @@ export const SITE_NAME = "Oinkbuns";
 export const TAGLINE = "Bake hot cross buns with Peppa";
 export const DESCRIPTION =
   "A tiny, free kitchen game: mix dough, bake, pipe the cross, and serve hot cross buns with Peppa. Plays on a laptop, tablet, or phone.";
+export const LOGO_URL = `${SITE_URL}/play/icons/icon-512.png`;
 export const REPO_URL = "https://github.com/verastack-labs/oinkbuns";
 export const ORG_NAME = "VeraStack Labs";
 export const ORG_URL = "https://verastack.dev";
