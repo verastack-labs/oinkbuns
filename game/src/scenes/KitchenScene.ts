@@ -8,6 +8,7 @@ import { InputController } from '../input/InputController';
 import { COLORS, cssColor, FONT_STACK } from '../ui/theme';
 import { promptText } from '../ui/promptText';
 import { buzz } from '../fx/haptics';
+import { reduceMotion } from '../fx/reduceMotion';
 import { MuteButton } from '../ui/MuteButton';
 import { PauseButton } from '../ui/PauseButton';
 import { KitchenFx } from './kitchenFx';
@@ -58,6 +59,11 @@ const OVEN_X = 1190;
 const CUSTOMER_FEET_Y = 215;
 const CUSTOMER_SCALE = 0.85;
 
+// A blink every 3.6 seconds, lasting 140 ms; `offset` keeps neighbours out of step.
+const blinking = (now: number, offset: number): boolean => (now + offset) % 3600 < 140;
+// A gentle breath: the sprite stretches about one percent, unless motion is reduced.
+const breath = (now: number, offset: number): number => (reduceMotion() ? 1 : 1 + Math.sin((now + offset) / 550) * 0.012);
+
 interface CustomerView {
   root: Phaser.GameObjects.Container;
   body: Phaser.GameObjects.Image;
@@ -65,6 +71,8 @@ interface CustomerView {
   ticks: Phaser.GameObjects.Text[];
   patience: Phaser.GameObjects.Graphics;
   id: string;
+  happyUntil: number;
+  hopStart: number;
   top: number; // y of the bubble's tail tip, relative to the feet
 }
 
@@ -90,6 +98,7 @@ export class KitchenScene extends Phaser.Scene {
   private clockText!: Phaser.GameObjects.Text;
   private hintArrow!: Phaser.GameObjects.Image;
   private walkClock = 0;
+  private peppaHappyUntil = 0;
   private peppaShadow!: Phaser.GameObjects.Ellipse;
   private peppaRoot!: Phaser.GameObjects.Container;
   private heldRoot!: Phaser.GameObjects.Container;
@@ -137,6 +146,7 @@ export class KitchenScene extends Phaser.Scene {
     this.stations = new Map();
     this.ovenSlots = [];
     this.walkClock = 0;
+    this.peppaHappyUntil = 0;
 
     this.add.image(0, 0, 'kitchen-bg').setOrigin(0).setDepth(DEPTH.floor);
     this.drawShading();
@@ -236,9 +246,18 @@ export class KitchenScene extends Phaser.Scene {
         // Spec 6.2: the kitchen loop speeds up for the last fifteen seconds.
         sfx().setMusicRate(1.15);
         break;
-      case 'bun-served':
+      case 'bun-served': {
         buzz(30);
+        // The customer hops and beams, and Peppa smiles back.
+        const view = this.customers.get(event.uid);
+        const now = this.time.now;
+        if (view) {
+          view.happyUntil = now + 800;
+          view.hopStart = now;
+        }
+        this.peppaHappyUntil = now + 800;
         break;
+      }
       case 'day-over': {
         sfx().setMusicRate(1);
         const data: DayEndData = { dayId: this.day.config.id, pennies: event.pennies, stars: event.stars };
@@ -255,11 +274,14 @@ export class KitchenScene extends Phaser.Scene {
     const s = this.day.state;
 
     // Peppa: two-frame walk, flipped to face where she is going.
-    const frame = s.peppa.moving ? (Math.floor(this.walkClock / WALK_FRAME_SECONDS) % 2 === 0 ? 'peppa-walk1' : 'peppa-walk2') : 'peppa-idle';
+    const now = this.time.now;
+    const frame = s.peppa.moving
+      ? Math.floor(this.walkClock / WALK_FRAME_SECONDS) % 2 === 0 ? 'peppa-walk1' : 'peppa-walk2'
+      : now < this.peppaHappyUntil ? 'peppa-happy' : blinking(now, 0) ? 'peppa-blink' : 'peppa-idle';
     const sc = depthScale(s.peppa.y);
     // A tiny bounce while walking makes the two-frame walk feel springy.
     const bob = s.peppa.moving ? Math.abs(Math.sin(this.walkClock * 14)) * 3 : 0;
-    this.peppa.setTexture(frame).setPosition(0, -bob).setFlipX(s.peppa.facing === 'left');
+    this.peppa.setTexture(frame).setPosition(0, -bob).setFlipX(s.peppa.facing === 'left').setScale(1, s.peppa.moving ? 1 : breath(now, 0));
     this.peppaRoot.setPosition(s.peppa.x, s.peppa.y).setScale(sc).setDepth(floorDepth(s.peppa.y));
     this.peppaShadow.setPosition(s.peppa.x, s.peppa.y - 2).setScale(sc * (1 - bob / 20));
 
@@ -340,8 +362,14 @@ export class KitchenScene extends Phaser.Scene {
       }
       const p = STATION_POINTS[counterId(c.spot)];
       // Customers stand behind the counter (it hides their legs), with the
-      // order bubble just above their heads.
-      view.root.setPosition(p.x, CUSTOMER_FEET_Y);
+      // order bubble just above their heads. They breathe, blink, hop when
+      // served and look sad when their patience runs low.
+      const now = this.time.now;
+      const hopT = now - view.hopStart;
+      const hop = hopT < 420 && !reduceMotion() ? Math.sin((hopT / 420) * Math.PI) * 16 : 0;
+      view.root.setPosition(p.x, CUSTOMER_FEET_Y - hop);
+      const mood = now < view.happyUntil ? 'happy' : c.patience < 0.25 ? 'sad' : blinking(now, c.uid * 977) ? 'blink' : 'idle';
+      view.body.setTexture(`${view.id}-${mood}`).setScale(CUSTOMER_SCALE, CUSTOMER_SCALE * breath(now, c.uid * 977));
       c.order.buns.forEach((bun, i) => {
         view.buns[i]?.setAlpha(bun.served ? 0.35 : 1);
         view.ticks[i]?.setVisible(bun.served);
@@ -374,7 +402,7 @@ export class KitchenScene extends Phaser.Scene {
     });
     const patience = this.add.graphics();
     const root = this.add.container(0, 0, [body, bubble, ...buns, ...ticks, patience]).setDepth(DEPTH.customers);
-    return { root, body, buns, ticks, patience, id: c.id, top };
+    return { root, body, buns, ticks, patience, id: c.id, happyUntil: 0, hopStart: -1000, top };
   }
 
   private renderPrompt(): void {

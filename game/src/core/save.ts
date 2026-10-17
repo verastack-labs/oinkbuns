@@ -98,3 +98,9 @@ export function createMemoryStore(): KeyValueStore {
     },
   };
 }
+
+// A sticker is earned the first time a day is finished with three stars, so
+// the book is derived from the saved stars and needs no storage of its own.
+export function hasSticker(progress: Progress, dayId: number): boolean {
+  return progress.bestStars[String(dayId)] === 3;
+}
