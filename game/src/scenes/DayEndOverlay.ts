@@ -63,7 +63,7 @@ export class DayEndOverlay extends Phaser.Scene {
     }
 
     // Three stars earns the day's sticker; it pops in once, the first time.
-    if (data.stars === 3 && data.dayId >= 1 && data.dayId <= 5) {
+    if (data.stars === 3 && this.textures.exists(`sticker-${data.dayId}`)) {
       const sticker = this.add.image(CX + 250, CY - 120, `sticker-${data.dayId}`).setAngle(-12);
       this.add
         .text(CX + 250, CY - 56, hadSticker ? 'Sticker!' : 'New sticker!', { ...text, fontSize: '22px', fontStyle: 'bold' })

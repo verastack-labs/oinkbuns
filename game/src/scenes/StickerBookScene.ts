@@ -9,7 +9,6 @@ import { COLORS, cssColor, FONT_STACK } from '../ui/theme';
 import { SceneKey } from './keys';
 
 const CX = LOGICAL_WIDTH / 2;
-const SLOT_W = 190;
 
 /**
  * The sticker book: one slot per day. A day finished with three stars shows
@@ -25,7 +24,8 @@ export class StickerBookScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(COLORS.wall);
     const text = { fontFamily: FONT_STACK, color: cssColor(COLORS.text) };
     const progress = getProgress();
-    const days = DAYS.filter((d) => d.id >= 1 && d.id <= 5);
+    const days = DAYS.filter((d) => this.textures.exists(`sticker-${d.id}`));
+    const SLOT_W = Math.min(190, Math.floor((LOGICAL_WIDTH - 140) / days.length));
     const earned = days.filter((d) => hasSticker(progress, d.id)).length;
 
     this.add.text(CX, 80, 'Sticker book', { ...text, fontSize: '56px', fontStyle: 'bold' }).setOrigin(0.5);

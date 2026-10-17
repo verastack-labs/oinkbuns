@@ -1,0 +1,16 @@
+{
+  "id": 6,
+  "name": "Rush Hour",
+  "twist": "Everyone is hungry at once. Keep both ovens busy!",
+  "end": { "type": "time", "seconds": 90 },
+  "customers": ["george", "suzy", "danny", "grandpa"],
+  "maxOrderSize": 3,
+  "maxQueue": 3,
+  "spawnGapSeconds": [2.5, 5],
+  "chipChance": 0.5,
+  "bakeSeconds": 4,
+  "burnWindowSeconds": 3.5,
+  "patienceMultiplier": 0.85,
+  "tutorial": false,
+  "stars": [12, 18, 22]
+}
