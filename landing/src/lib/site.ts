@@ -49,6 +49,10 @@ export const FAQS: Faq[] = [
     a: "Yes. Stars and unlocked days are saved in your own browser on your device. Nothing is sent to a server.",
   },
   {
+    q: "Does Oinkbuns collect any information about my child?",
+    a: "No. There are no accounts, no ads, no analytics, no cookies and no third-party scripts. Nothing about a player is sent anywhere. The only thing saved is your stars, kept on your own device. See the privacy note at /privacy/ for the details.",
+  },
+  {
     q: "Is Oinkbuns an official Peppa Pig game?",
     a: "No. Oinkbuns is an unofficial fan project and is not affiliated with, endorsed by, or connected to Hasbro or Entertainment One.",
   },

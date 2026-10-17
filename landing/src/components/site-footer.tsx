@@ -19,11 +19,12 @@ export function SiteFooter() {
           <nav className="flex flex-wrap justify-center gap-3">
             <a href="/play/" className="chip">Play the game</a>
             <Link href="/devlog/" className="chip">Devlog</Link>
+            <Link href="/privacy/" className="chip">Privacy</Link>
             <a href="/devlog/feed.xml" className="chip">RSS</a>
             <a href="https://github.com/verastack-labs/oinkbuns" className="chip">Source on GitHub</a>
           </nav>
           <p className="max-w-prose text-sm">{DISCLAIMER}</p>
-          <p className="text-sm">Made with care by VeraStack Labs. No ads, no accounts, no tracking.</p>
+          <p className="text-sm">Made with care by VeraStack Labs. No ads, no accounts, no tracking. <Link href="/privacy/" className="underline">Privacy note</Link></p>
         </div>
       </div>
     </footer>

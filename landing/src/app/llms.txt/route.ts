@@ -19,6 +19,7 @@ export function GET(): Response {
     `- [Play the game](${SITE_URL}/play/): runs in any modern browser on laptop, tablet or phone`,
     `- [Home page](${SITE_URL}/): how to play, the customers and the five days`,
     `- [Devlog](${SITE_URL}/devlog/): notes on how the game is made`,
+    `- [Privacy note](${SITE_URL}/privacy/): no ads, no accounts, no analytics, no cookies, nothing collected`,
     `- [Source code](${REPO_URL})`,
     "",
     "## Devlog posts",

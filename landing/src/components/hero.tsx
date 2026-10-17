@@ -34,9 +34,18 @@ export function Hero() {
           </p>
           <div className="flex flex-wrap justify-center gap-2 md:justify-start">
             <span className="chip">Ages 7 and up</span>
-            <span className="chip">Free, no ads</span>
+            <span className="chip">Free</span>
             <span className="chip">Laptop, tablet, phone</span>
           </div>
+          <a
+            href="/privacy/"
+            className="card-game flex items-center gap-2 px-4 py-2 text-lg font-semibold"
+            aria-label="No ads, no accounts, no tracking. Read our privacy note."
+          >
+            <span aria-hidden="true">&#128274;</span>
+            No ads. No accounts. No tracking.
+            <span className="text-sm text-peppa-red underline">Why you can trust that</span>
+          </a>
           <PlayButton className="mt-3" />
         </div>
         <div className="relative flex items-end justify-center">
