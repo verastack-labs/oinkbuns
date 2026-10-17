@@ -42,8 +42,8 @@ export const viewport: Viewport = {
 // exists after a build has run; CI typechecks before building.
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="tiles flex min-h-full flex-col">
+    <html lang="en" className="antialiased">
+      <body className="tiles flex min-h-svh flex-col">
         <JsonLd
           data={{
             "@context": "https://schema.org",
