@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { DESCRIPTION, ORG_NAME, ORG_URL, REPO_URL, SITE_NAME, SITE_URL, TAGLINE } from "@/lib/site";
+import { DESCRIPTION, LOGO_URL, ORG_NAME, ORG_URL, REPO_URL, SITE_NAME, SITE_URL, TAGLINE } from "@/lib/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -48,7 +48,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           data={{
             "@context": "https://schema.org",
             "@graph": [
-              { "@type": "Organization", "@id": `${SITE_URL}/#org`, name: ORG_NAME, url: ORG_URL, sameAs: [REPO_URL] },
+              { "@type": "Organization", "@id": `${SITE_URL}/#org`, name: ORG_NAME, url: ORG_URL, logo: { "@type": "ImageObject", url: LOGO_URL, width: 512, height: 512 }, sameAs: [REPO_URL] },
               {
                 "@type": "WebSite",
                 "@id": `${SITE_URL}/#website`,
