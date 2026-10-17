@@ -317,6 +317,9 @@ export class KitchenScene extends Phaser.Scene {
       this.clockText.setColor(cssColor(secs <= 15 ? COLORS.bad : COLORS.text));
     } else if (end.type === 'customers') {
       this.clockText.setText(`Served ${s.served} / ${end.count}`);
+    } else if (end.type === 'strikes') {
+      this.clockText.setText(`Sad: ${s.strikes} / ${end.strikes}`);
+      this.clockText.setColor(cssColor(s.strikes >= end.strikes - 1 ? COLORS.bad : COLORS.text));
     }
   }
 

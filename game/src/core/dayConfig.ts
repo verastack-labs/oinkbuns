@@ -13,6 +13,7 @@ const CustomerIdSchema = z.enum(['george', 'suzy', 'danny', 'grandpa']);
 const DayEndSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('customers'), count: z.number().int().positive() }),
   z.object({ type: z.literal('time'), seconds: z.number().positive() }),
+  z.object({ type: z.literal('strikes'), strikes: z.number().int().positive() }),
 ]);
 
 export const DayConfigSchema: z.ZodType<DayConfig> = z.object({

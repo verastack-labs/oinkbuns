@@ -302,4 +302,18 @@ describe('computeStars', () => {
     expect(computeStars(6, [3, 5, 6])).toBe(3);
     expect(computeStars(99, [3, 5, 6])).toBe(3);
   });
+
+  it('an endless Bun Rush ends after the third customer leaves sad', () => {
+    const day = make({ end: { type: 'strikes', strikes: 3 }, maxQueue: 3, spawnGapSeconds: [0.5, 0.5] });
+    const events: DayEvent[] = [];
+    // Nobody is ever served, so customers run out of patience and leave.
+    for (let i = 0; i < 60 * 300 && !day.state.over; i += 1) {
+      day.tick(DT, IDLE);
+      events.push(...day.drain());
+    }
+    expect(day.state.over).toBe(true);
+    expect(day.state.strikes).toBe(3);
+    expect(events.filter((e) => e.type === 'customer-left-sad')).toHaveLength(3);
+    expect(day.state.remaining).toBeNull();
+  });
 });

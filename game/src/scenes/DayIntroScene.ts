@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { LOGICAL_HEIGHT, LOGICAL_WIDTH } from '../core/layout';
-import { dayById } from '../data/days';
+import { dayById, RUSH_ID } from '../data/days';
 import { sfx } from '../audio';
 import { Button } from '../ui/Button';
 import { MuteButton } from '../ui/MuteButton';
@@ -32,7 +32,7 @@ export class DayIntroScene extends Phaser.Scene {
     this.add.image(CX - 280, CY - 10, 'peppa-idle');
 
     this.add
-      .text(CX + 60, CY - 130, `Day ${day.id}`, {
+      .text(CX + 60, CY - 130, day.id === RUSH_ID ? 'Endless' : `Day ${day.id}`, {
         fontFamily: FONT_STACK,
         fontSize: '36px',
         color: cssColor(COLORS.peppaRed),

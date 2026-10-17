@@ -3,7 +3,7 @@ import { sfx } from '../audio';
 import { LOGICAL_HEIGHT, LOGICAL_WIDTH } from '../core/layout';
 import { isDayUnlocked } from '../core/save';
 import type { DayConfig, Stars as StarCount } from '../core/types';
-import { DAYS } from '../data/days';
+import { DAYS, RUSH_ID } from '../data/days';
 import { getProgress } from '../progressStore';
 import { Button } from '../ui/Button';
 import { CURSOR_HOVER } from '../ui/cursors';
@@ -63,6 +63,26 @@ export class DaySelectScene extends Phaser.Scene {
       },
       { width: 180 },
     );
+    // Bun Rush, the endless mode, opens once day 5 is finished.
+    if (isDayUnlocked(progress, 6)) {
+      const best = progress.bestRush > 0 ? ` (${progress.bestRush})` : '';
+      new Button(
+        this,
+        LOGICAL_WIDTH / 2,
+        LOGICAL_HEIGHT - 60,
+        `Bun Rush${best}`,
+        () => {
+          const data: DayIntroData = { dayId: RUSH_ID };
+          this.scene.start(SceneKey.DayIntro, data);
+        },
+        { width: 300 },
+      );
+    } else {
+      this.add
+        .text(LOGICAL_WIDTH / 2, LOGICAL_HEIGHT - 60, 'Finish day 5 to unlock Bun Rush', { fontFamily: FONT, fontSize: '22px', color: css(COLORS.text) })
+        .setOrigin(0.5)
+        .setAlpha(LOCKED_ALPHA);
+    }
     new Button(this, LOGICAL_WIDTH - 160, LOGICAL_HEIGHT - 60, 'Stickers', () => this.scene.start(SceneKey.StickerBook), {
       width: 240,
     });
