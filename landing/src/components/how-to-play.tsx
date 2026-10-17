@@ -22,7 +22,7 @@ export function HowToPlay() {
             <div className="flex h-28 items-center">
               <Image src={step.art} alt="" width={step.w} height={step.h} />
             </div>
-            <h3 className="mt-2 text-3xl font-semibold text-peppa-red">{step.title}</h3>
+            <h3 className="mt-2 text-3xl font-semibold text-peppa-red-ink">{step.title}</h3>
             <p className="mt-2 text-lg">{step.text}</p>
           </li>
         ))}

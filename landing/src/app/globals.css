@@ -26,6 +26,9 @@
   --color-peppa-pink: #f4a6c6;
   --color-peppa-red: #e84a5f;
   --color-george-blue: #4a90e2;
+  /* Darker twins for small text on cream: 4.5:1 or better (WCAG AA). */
+  --color-peppa-red-ink: #c0263c;
+  --color-george-blue-ink: #2b66ad;
   --color-wall: #fff1d6;
   --color-tile: #f3e2c2;
   --color-floor: #d9a066;

@@ -50,7 +50,7 @@ export default async function PostPage({ params }: Props) {
         </div>
         <div className="px-6 py-8 sm:px-10">
           <header className="mb-8">
-            <time dateTime={post.date} className="text-sm font-semibold text-peppa-red">
+            <time dateTime={post.date} className="text-sm font-semibold text-peppa-red-ink">
               {formatDate(post.date)}
             </time>
             <h1 className="heading-pop mt-2 text-4xl font-semibold sm:text-5xl">{post.title}</h1>

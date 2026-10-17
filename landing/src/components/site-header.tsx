@@ -7,7 +7,7 @@ export function SiteHeader() {
       <Link href="/" className="flex items-center gap-2 text-2xl font-semibold" aria-label="Oinkbuns home">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/art/logo.svg" alt="" width={52} height={43} />
-        <span className="text-peppa-red">Oinkbuns</span>
+        <span className="text-peppa-red-ink">Oinkbuns</span>
       </Link>
       <nav className="flex items-center gap-3">
         <Link href="/devlog/" className="chip hover:bg-wall">
