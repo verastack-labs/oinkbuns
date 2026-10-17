@@ -13,9 +13,10 @@ import { COLORS, FONT } from '../ui/theme';
 import { SceneKey } from './keys';
 import type { DayIntroData } from './sceneData';
 
-const CARD_W = 200;
+// Cards shrink to fit however many days there are, up to 200 px wide.
+const CARD_GAP = 16;
+const CARD_W = Math.min(200, Math.floor((LOGICAL_WIDTH - 120 - (DAYS.length - 1) * CARD_GAP) / DAYS.length));
 const CARD_H = 300;
-const CARD_GAP = 24;
 const CARD_Y = LOGICAL_HEIGHT / 2 + 20;
 const LOCKED_ALPHA = 0.55;
 
@@ -83,7 +84,7 @@ export class DaySelectScene extends Phaser.Scene {
       this.add
         .text(x, y - 45, day.name, {
           fontFamily: FONT,
-          fontSize: '22px',
+          fontSize: CARD_W < 170 ? '20px' : '22px',
           color: css(COLORS.text),
           align: 'center',
           wordWrap: { width: CARD_W - 32 },
@@ -93,7 +94,7 @@ export class DaySelectScene extends Phaser.Scene {
 
     if (unlocked) {
       // 224 px of stars at full size; 70 percent fits inside the 200 px card.
-      parts.push(new Stars(this, x, y + 40, best, 0.7));
+      parts.push(new Stars(this, x, y + 40, best, Math.min(0.7, (CARD_W - 24) / 224)));
       // A zone keeps the hit area independent of how Card draws itself.
       // 200 by 300 logical pixels is well above the 72 px touch minimum.
       const hit = this.add.zone(x, y, CARD_W, CARD_H).setInteractive({ cursor: CURSOR_HOVER });

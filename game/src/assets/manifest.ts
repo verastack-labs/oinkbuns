@@ -75,6 +75,8 @@ export const ART: ArtAsset[] = [
   art('sticker-3', 96, 96),
   art('sticker-4', 96, 96),
   art('sticker-5', 96, 96),
+  art('sticker-6', 96, 96),
+  art('sticker-7', 96, 96),
   art('sticker-locked', 96, 96),
   art('logo', 360, 300),
   art('cloud-sad', 130, 80),

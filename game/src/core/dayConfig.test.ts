@@ -5,11 +5,13 @@ import day2 from '../data/days/day2.json';
 import day3 from '../data/days/day3.json';
 import day4 from '../data/days/day4.json';
 import day5 from '../data/days/day5.json';
+import day6 from '../data/days/day6.json';
+import day7 from '../data/days/day7.json';
 import { CUSTOMERS } from './customers';
 import { parseDayConfig } from './dayConfig';
 import type { DayEnd } from './types';
 
-const RAW: unknown[] = [day1, day2, day3, day4, day5];
+const RAW: unknown[] = [day1, day2, day3, day4, day5, day6, day7];
 
 // Spec section 5.7, both tables, copied by hand so a typo in a JSON file fails here.
 const SPEC: Array<{
@@ -28,6 +30,8 @@ const SPEC: Array<{
   { id: 3, name: "Don't Burn Them!", end: { type: 'time', seconds: 90 }, maxQueue: 2, maxOrderSize: 2, customers: ['george', 'suzy', 'danny'], burn: 4, spawnGap: [5, 9], stars: [6, 9, 12] },
   { id: 4, name: 'Choc Chip Day', end: { type: 'time', seconds: 90 }, maxQueue: 2, maxOrderSize: 2, customers: ['george', 'suzy', 'danny'], burn: 4, spawnGap: [5, 9], stars: [8, 12, 16] },
   { id: 5, name: "Grandpa's Big Order", end: { type: 'time', seconds: 100 }, maxQueue: 3, maxOrderSize: 3, customers: ['george', 'suzy', 'danny', 'grandpa'], burn: 4, spawnGap: [4, 8], stars: [10, 15, 20] },
+  { id: 6, name: 'Rush Hour', end: { type: 'time', seconds: 90 }, maxQueue: 3, maxOrderSize: 3, customers: ['george', 'suzy', 'danny', 'grandpa'], burn: 3.5, spawnGap: [2.5, 5], stars: [12, 18, 22] },
+  { id: 7, name: 'The Big Bun Party', end: { type: 'time', seconds: 120 }, maxQueue: 3, maxOrderSize: 3, customers: ['george', 'suzy', 'danny', 'grandpa'], burn: 3, spawnGap: [3, 6], stars: [16, 24, 30] },
 ];
 
 describe('day config files', () => {
@@ -43,15 +47,15 @@ describe('day config files', () => {
     expect(() => parseDayConfig({ ...(day2 as object), end: { type: 'time' } })).toThrow();
   });
 
-  it('exposes DAYS with ids 1 to 5 in order', () => {
-    expect(DAYS.map((d) => d.id)).toEqual([1, 2, 3, 4, 5]);
+  it('exposes DAYS with ids 1 to 7 in order', () => {
+    expect(DAYS.map((d) => d.id)).toEqual([1, 2, 3, 4, 5, 6, 7]);
   });
 
-  it('resolves dayById for 1 to 5 and throws on 6', () => {
-    for (const id of [1, 2, 3, 4, 5]) {
+  it('resolves dayById for 1 to 7 and throws on 8', () => {
+    for (const id of [1, 2, 3, 4, 5, 6, 7]) {
       expect(dayById(id).id).toBe(id);
     }
-    expect(() => dayById(6)).toThrow();
+    expect(() => dayById(8)).toThrow();
     expect(() => dayById(0)).toThrow();
   });
 
