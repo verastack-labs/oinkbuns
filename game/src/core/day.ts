@@ -73,8 +73,12 @@ export class Day {
   private lastSecondsSent = false;
   private binHint: BinHint = 'unused';
 
-  constructor(config: DayConfig, seed: number) {
+  private readonly interactRadius: number;
+
+  // `interactRadius` widens how close Peppa must stand to use a station (a grown-up setting).
+  constructor(config: DayConfig, seed: number, opts: { interactRadius?: number } = {}) {
     this.config = config;
+    this.interactRadius = opts.interactRadius ?? INTERACT_RADIUS;
     this.ovenCfg = { bakeSeconds: config.bakeSeconds, burnWindowSeconds: config.burnWindowSeconds };
     this.spawner = createSpawner(config, mulberry32(seed));
     this.s = {
@@ -230,7 +234,7 @@ export class Day {
     }
     const feet = { x: s.peppa.x, y: s.peppa.y };
     let nearest: StationId | null = null;
-    let best = INTERACT_RADIUS;
+    let best = this.interactRadius;
     for (const id of STATION_IDS) {
       if (id === 'chipJar' && this.config.chipChance === 0) {
         continue;

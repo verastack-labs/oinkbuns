@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { sfx } from '../audio';
 import { Day } from '../core/day';
-import { clampToWalkable, counterId, LOGICAL_WIDTH, STATION_POINTS, WALKABLE } from '../core/layout';
+import { clampToWalkable, counterId, INTERACT_RADIUS, LOGICAL_WIDTH, STATION_POINTS, WALKABLE } from '../core/layout';
 import type { CustomerState, DayEvent, ItemKind, Point, StationId } from '../core/types';
 import { dayById } from '../data/days';
 import { InputController } from '../input/InputController';
@@ -9,6 +9,7 @@ import { COLORS, cssColor, FONT_STACK } from '../ui/theme';
 import { promptText } from '../ui/promptText';
 import { buzz } from '../fx/haptics';
 import { reduceMotion } from '../fx/reduceMotion';
+import { getProgress } from '../progressStore';
 import { MuteButton } from '../ui/MuteButton';
 import { PauseButton } from '../ui/PauseButton';
 import { KitchenFx } from './kitchenFx';
@@ -140,8 +141,11 @@ export class KitchenScene extends Phaser.Scene {
   }
 
   create(data: KitchenData): void {
-    const config = dayById(data.dayId);
-    this.day = new Day(config, data.seed);
+    const base = dayById(data.dayId);
+    const settings = getProgress();
+    // Grown-up settings: customers wait 50 percent longer, and stations work from further away.
+    const config = settings.slowCustomers ? { ...base, patienceMultiplier: base.patienceMultiplier * 1.5 } : base;
+    this.day = new Day(config, data.seed, settings.bigTargets ? { interactRadius: INTERACT_RADIUS * 1.4 } : {});
     this.customers = new Map();
     this.stations = new Map();
     this.ovenSlots = [];

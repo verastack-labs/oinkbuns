@@ -36,7 +36,7 @@ export default function Privacy() {
           </ul>
           <h2>What is saved, and where</h2>
           <p>
-            Your stars and which days are unlocked are saved in your browser&apos;s local storage, on your own device. They
+            Your stars, stickers, which days are unlocked and the grown-up settings are saved in your browser&apos;s local storage, on your own device. They
             never leave it. Clearing your browser data, or using a private window, starts the game fresh.
           </p>
           <h2>Offline play</h2>

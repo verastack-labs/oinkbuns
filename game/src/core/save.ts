@@ -16,12 +16,15 @@ export interface Progress {
   version: 1;
   bestStars: Record<string, Stars>;
   muted: boolean;
+  // Grown-up settings: customers wait 50 percent longer; Peppa reaches stations from further away.
+  slowCustomers: boolean;
+  bigTargets: boolean;
 }
 
 export const SAVE_KEY = 'oinkbuns.save.v1';
 
 export function emptyProgress(): Progress {
-  return { version: 1, bestStars: {}, muted: false };
+  return { version: 1, bestStars: {}, muted: false, slowCustomers: false, bigTargets: false };
 }
 
 function isStars(value: unknown): value is Stars {
@@ -62,7 +65,15 @@ export function loadProgress(store: KeyValueStore): Progress {
   if (!isProgress(parsed)) {
     return emptyProgress();
   }
-  return { version: 1, bestStars: { ...parsed.bestStars }, muted: parsed.muted };
+  const o = parsed as unknown as Record<string, unknown>;
+  return {
+    version: 1,
+    bestStars: { ...parsed.bestStars },
+    muted: parsed.muted,
+    // Older saves have no settings; anything that is not a boolean means off.
+    slowCustomers: o.slowCustomers === true,
+    bigTargets: o.bigTargets === true,
+  };
 }
 
 export function saveProgress(store: KeyValueStore, progress: Progress): void {
