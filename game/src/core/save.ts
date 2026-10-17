@@ -19,12 +19,14 @@ export interface Progress {
   // Grown-up settings: customers wait 50 percent longer; Peppa reaches stations from further away.
   slowCustomers: boolean;
   bigTargets: boolean;
+  // Best pennies in the endless Bun Rush.
+  bestRush: number;
 }
 
 export const SAVE_KEY = 'oinkbuns.save.v1';
 
 export function emptyProgress(): Progress {
-  return { version: 1, bestStars: {}, muted: false, slowCustomers: false, bigTargets: false };
+  return { version: 1, bestStars: {}, muted: false, slowCustomers: false, bigTargets: false, bestRush: 0 };
 }
 
 function isStars(value: unknown): value is Stars {
@@ -73,6 +75,7 @@ export function loadProgress(store: KeyValueStore): Progress {
     // Older saves have no settings; anything that is not a boolean means off.
     slowCustomers: o.slowCustomers === true,
     bigTargets: o.bigTargets === true,
+    bestRush: typeof o.bestRush === 'number' && o.bestRush >= 0 ? Math.floor(o.bestRush) : 0,
   };
 }
 

@@ -73,7 +73,11 @@ export interface OvenSlotState {
   elapsed: number; // seconds in the current status
 }
 
-export type DayEnd = { type: 'customers'; count: number } | { type: 'time'; seconds: number };
+// 'strikes' is the endless Bun Rush: the day ends when this many customers leave sad.
+export type DayEnd =
+  | { type: 'customers'; count: number }
+  | { type: 'time'; seconds: number }
+  | { type: 'strikes'; strikes: number };
 
 export interface DayConfig {
   id: number;
@@ -124,6 +128,7 @@ export interface DayState {
   pennies: number;
   served: number; // customers whose orders completed
   elapsed: number; // seconds since start
+  strikes: number; // customers who left sad (counts toward the end of a Bun Rush)
   remaining: number | null; // seconds left for time-ended days, else null
   over: boolean;
   stars: Stars; // valid once over is true

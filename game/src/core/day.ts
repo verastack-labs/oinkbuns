@@ -90,6 +90,7 @@ export class Day {
       pennies: 0,
       served: 0,
       elapsed: 0,
+      strikes: 0,
       remaining: config.end.type === 'time' ? config.end.seconds : null,
       over: false,
       stars: 0,
@@ -188,6 +189,7 @@ export class Day {
     for (const c of s.queue) {
       c.patience = Math.max(0, c.patience - dt / c.patienceSeconds);
       if (c.patience <= 0) {
+        this.s.strikes += 1;
         this.events.push({ type: 'customer-left-sad', uid: c.uid });
       } else {
         staying.push(c);
@@ -201,7 +203,9 @@ export class Day {
 
   private tickSpawner(dt: number): void {
     const s = this.s;
-    const spawn = this.spawner.tick(dt, s.queue.length);
+    // The endless Bun Rush speeds up: customers arrive up to twice as often after three minutes.
+    const rush = this.config.end.type === 'strikes';
+    const spawn = this.spawner.tick(rush ? dt * (1 + Math.min(1, s.elapsed / 180)) : dt, s.queue.length);
     if (spawn === null) {
       return;
     }
@@ -213,7 +217,8 @@ export class Day {
       id: spawn.id,
       order: spawn.order,
       patience: 1,
-      patienceSeconds: def.patienceSeconds * this.config.patienceMultiplier,
+      // ...and they grow less patient, down to 60 percent after four minutes.
+      patienceSeconds: def.patienceSeconds * this.config.patienceMultiplier * (rush ? Math.max(0.6, 1 - s.elapsed / 600) : 1),
       spot,
     });
     this.events.push({ type: 'customer-arrived', uid: this.nextUid, id: spawn.id, spot });
@@ -371,6 +376,12 @@ export class Day {
       }
       if (s.remaining <= 0) {
         s.elapsed = end.seconds;
+        this.finish();
+      }
+      return;
+    }
+    if (end.type === 'strikes') {
+      if (s.strikes >= end.strikes) {
         this.finish();
       }
       return;
