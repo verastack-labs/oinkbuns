@@ -23,12 +23,18 @@
       /* #fff1d6 is the kitchen wall colour. The page behind the canvas shows
          through as the letterbox bars, so it must match the canvas
          background set in src/config.ts. */
+      /* svh is the viewport with the browser toolbar showing, so it does not
+         change when Android Chrome hides or shows its address bar while the
+         page is touched. The game area keeps one size, and the spare strip is
+         the same colour as the canvas background. */
       html,
       body {
         margin: 0;
-        height: 100%;
+        height: 100vh;
+        height: 100svh;
         background: #fff1d6;
         overflow: hidden;
+        overscroll-behavior: none;
       }
       #game {
         width: 100%;
