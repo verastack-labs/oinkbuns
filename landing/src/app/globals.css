@@ -278,7 +278,7 @@ summary,
   font-weight: 600;
 }
 .post-body a {
-  color: var(--color-george-blue);
+  color: var(--color-george-blue-ink);
   font-weight: 600;
   text-decoration: underline;
   text-decoration-thickness: 3px;
