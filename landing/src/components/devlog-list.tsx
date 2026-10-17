@@ -30,12 +30,12 @@ export function DevlogList({ posts, heading, showAllLink = false }: { posts: Pos
                 {post.cover ? <Image src={post.cover} alt="" width={96} height={120} className="h-28 w-auto" /> : null}
               </div>
               <div className="flex flex-1 flex-col gap-2 px-5 py-4">
-                <time dateTime={post.date} className="text-sm font-semibold text-peppa-red">
+                <time dateTime={post.date} className="text-sm font-semibold text-peppa-red-ink">
                   {formatDate(post.date)}
                 </time>
                 <h3 className="text-2xl font-semibold leading-tight">{post.title}</h3>
                 <p>{post.summary}</p>
-                <span className="mt-auto pt-2 font-semibold text-george-blue">Read it &rarr;</span>
+                <span className="mt-auto pt-2 font-semibold text-george-blue-ink">Read it &rarr;</span>
               </div>
             </Link>
           </li>

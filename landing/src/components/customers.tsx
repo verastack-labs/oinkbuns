@@ -11,7 +11,7 @@ const STYLE: Record<string, { bg: string; tilt: string; patience: number }> = {
 
 function Hearts({ count }: { count: number }) {
   return (
-    <span className="flex gap-0.5" aria-label={`Patience ${count} out of 4`}>
+    <span className="flex gap-0.5" role="img" aria-label={`Patience ${count} out of 4`}>
       {[0, 1, 2, 3].map((i) => (
         <svg key={i} viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
           <path

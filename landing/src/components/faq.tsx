@@ -16,7 +16,7 @@ export function Faq() {
           <details key={f.q} className="card-game group px-6 py-4">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-xl font-semibold">
               {f.q}
-              <span aria-hidden="true" className="text-2xl text-peppa-red transition-transform group-open:rotate-45">
+              <span aria-hidden="true" className="text-2xl text-peppa-red-ink transition-transform group-open:rotate-45">
                 +
               </span>
             </summary>

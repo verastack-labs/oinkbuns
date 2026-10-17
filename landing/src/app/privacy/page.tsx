@@ -29,7 +29,7 @@ export default function Privacy() {
           <ul className="grid gap-4 sm:grid-cols-2">
             {PROMISES.map(([title, text]) => (
               <li key={title} className="card-game px-4 py-3">
-                <strong className="text-xl text-peppa-red">{title}</strong>
+                <strong className="text-xl text-peppa-red-ink">{title}</strong>
                 <p className="mt-1">{text}</p>
               </li>
             ))}

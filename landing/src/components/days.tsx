@@ -32,7 +32,7 @@ export function Days() {
         {DAYS.map((d) => (
           <li key={d.id} className="snap-center">
             <a href="/play/" className="card-game hop flex h-full w-48 flex-col items-center gap-2 px-4 py-5 text-center">
-              <span className="text-lg font-semibold text-peppa-red">Day {d.id}</span>
+              <span className="text-lg font-semibold text-peppa-red-ink">Day {d.id}</span>
               <Image src={d.art} alt="" width={64} height={64} />
               <span className="text-xl font-semibold leading-tight">{d.name}</span>
               <span className="text-sm">{d.twist}</span>
