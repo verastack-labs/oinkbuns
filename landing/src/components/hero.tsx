@@ -30,7 +30,7 @@ export function Hero() {
           <p className="text-2xl font-semibold sm:text-3xl">Bake hot cross buns with Peppa!</p>
           <p className="max-w-md text-lg">
             Mix the dough, pop it in the oven, pipe the cross, and serve your friends before they get
-            hungry. Five busy days, three stars each.
+            hungry. Seven busy days, three stars each.
           </p>
           <div className="flex flex-wrap justify-center gap-2 md:justify-start">
             <span className="chip">Ages 7 and up</span>

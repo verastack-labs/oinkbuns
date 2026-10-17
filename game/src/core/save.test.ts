@@ -20,7 +20,7 @@ function storeWith(value: string): KeyValueStore {
 describe('save', () => {
   it('uses the contract key and an empty progress shape', () => {
     expect(SAVE_KEY).toBe('oinkbuns.save.v1');
-    expect(emptyProgress()).toEqual({ version: 1, bestStars: {}, muted: false });
+    expect(emptyProgress()).toEqual({ version: 1, bestStars: {}, muted: false, slowCustomers: false, bigTargets: false });
   });
 
   it('falls back to empty progress when nothing is stored', () => {
@@ -64,10 +64,16 @@ describe('save', () => {
 
   it('round-trips valid progress', () => {
     const store = createMemoryStore();
-    const progress = { version: 1 as const, bestStars: { '1': 3 as const, '2': 1 as const }, muted: true };
+    const progress = { version: 1 as const, bestStars: { '1': 3 as const, '2': 1 as const }, muted: true, slowCustomers: true, bigTargets: false };
     saveProgress(store, progress);
     expect(JSON.parse(store.getItem(SAVE_KEY) ?? '')).toEqual(progress);
     expect(loadProgress(store)).toEqual(progress);
+  });
+
+  it('loads an older save that has no settings as settings off', () => {
+    const store = createMemoryStore();
+    store.setItem(SAVE_KEY, JSON.stringify({ version: 1, bestStars: { '1': 2 }, muted: false }));
+    expect(loadProgress(store)).toEqual({ version: 1, bestStars: { '1': 2 }, muted: false, slowCustomers: false, bigTargets: false });
   });
 
   it('hasSticker is true only for days finished with three stars', () => {

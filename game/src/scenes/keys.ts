@@ -12,6 +12,7 @@ export const SceneKey = {
   DayEnd: 'DayEnd',
   Pause: 'Pause',
   StickerBook: 'StickerBook',
+  Settings: 'Settings',
 } as const;
 
 export type SceneKeyName = (typeof SceneKey)[keyof typeof SceneKey];

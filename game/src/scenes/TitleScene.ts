@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { LOGICAL_WIDTH } from '../core/layout';
+import { LOGICAL_HEIGHT, LOGICAL_WIDTH } from '../core/layout';
 import { sfx } from '../audio';
 import { Button } from '../ui/Button';
 import { MuteButton } from '../ui/MuteButton';
@@ -58,5 +58,6 @@ export class TitleScene extends Phaser.Scene {
       },
       { width: 280 },
     );
+    new Button(this, 150, LOGICAL_HEIGHT - 60, 'Grown-ups', () => this.scene.start(SceneKey.Settings), { width: 240 });
   }
 }

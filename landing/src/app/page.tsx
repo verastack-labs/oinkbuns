@@ -36,7 +36,7 @@ const GAME = {
 };
 
 /**
- * Home: the hero, a peek at the kitchen, how to play, the customers, the five
+ * Home: the hero, a peek at the kitchen, how to play, the customers, the seven
  * days, and the latest devlog posts. Sections alternate wall tiles and floor
  * planks so the page reads like walking through the kitchen. A Server
  * Component: getAllPosts reads the content folder at build time.

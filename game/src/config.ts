@@ -4,6 +4,7 @@ import { BootScene } from './scenes/BootScene';
 import { DayEndOverlay } from './scenes/DayEndOverlay';
 import { DayIntroScene } from './scenes/DayIntroScene';
 import { DaySelectScene } from './scenes/DaySelectScene';
+import { SettingsScene } from './scenes/SettingsScene';
 import { StickerBookScene } from './scenes/StickerBookScene';
 import { PauseOverlay } from './scenes/PauseOverlay';
 import { KitchenScene } from './scenes/KitchenScene';
@@ -26,5 +27,5 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [BootScene, TitleScene, DaySelectScene, DayIntroScene, KitchenScene, DayEndOverlay, PauseOverlay, StickerBookScene],
+  scene: [BootScene, TitleScene, DaySelectScene, DayIntroScene, KitchenScene, DayEndOverlay, PauseOverlay, StickerBookScene, SettingsScene],
 };

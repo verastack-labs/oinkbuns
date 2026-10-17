@@ -43,11 +43,11 @@ export const FAQS: Faq[] = [
   },
   {
     q: "How many levels are there?",
-    a: "Five days: First Bake, Busy Morning, Don't Burn Them!, Choc Chip Day and Grandpa's Big Order. Each day adds one twist, and you can earn up to three stars on each.",
+    a: "Seven days: First Bake, Busy Morning, Don't Burn Them!, Choc Chip Day, Grandpa's Big Order, Rush Hour and The Big Bun Party. Each day adds a twist, and three stars on a day earns a sticker for your sticker book.",
   },
   {
     q: "Does Oinkbuns save my progress?",
-    a: "Yes. Stars and unlocked days are saved in your own browser on your device. Nothing is sent to a server.",
+    a: "Yes. Stars, stickers, unlocked days and the grown-up settings are saved in your own browser on your device. Nothing is sent to a server.",
   },
   {
     q: "Does Oinkbuns collect any information about my child?",
