@@ -12,6 +12,7 @@ export interface DayEndData {
   dayId: number;
   pennies: number;
   stars: Stars;
+  allHappy: boolean; // nobody left sad
 }
 export interface PauseData {
   dayId: number;

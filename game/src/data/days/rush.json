@@ -12,7 +12,8 @@
     "danny",
     "grandpa",
     "mummy",
-    "rebecca"
+    "rebecca",
+    "daddy"
   ],
   "maxOrderSize": 3,
   "maxQueue": 3,

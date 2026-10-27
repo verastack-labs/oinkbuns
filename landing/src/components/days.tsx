@@ -9,7 +9,7 @@ const DAYS = [
   { id: 4, name: "Choc Chip Day", twist: "Some orders want chocolate chips.", art: "/art/bun-chip-hot-cross.svg" },
   { id: 5, name: "Grandpa's Big Order", twist: "Three in the queue, three buns at once!", art: "/art/bun-hot-cross.svg" },
   { id: 6, name: "Rush Hour", twist: "Everyone is hungry at once. Keep both ovens busy!", art: "/art/bun-chip-baked.svg" },
-  { id: 7, name: "The Big Bun Party", twist: "A long, busy day with everyone in town.", art: "/art/bun-chip-hot-cross.svg" },
+  { id: 7, name: "The Big Bun Party", twist: "Everyone in town, even Daddy Pig!", art: "/art/bun-chip-hot-cross.svg" },
 ];
 
 function StarRow() {

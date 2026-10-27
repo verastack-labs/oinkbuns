@@ -100,6 +100,15 @@ export class DayEndOverlay extends Phaser.Scene {
       }
     }
 
+    // Nobody left sad: bunting across the card and a cheer.
+    if (data.allHappy && !rush) {
+      this.bunting(CY - 214);
+      this.add
+        .text(CX, CY + 62, 'Everyone went home happy!', { ...text, fontSize: '28px', fontStyle: 'bold', color: cssColor(COLORS.good) })
+        .setOrigin(0.5);
+      this.time.delayedCall(900, () => sfx().play('confetti', { rate: 1.2 }));
+    }
+
     const choices: Choice[] = [];
     if (nextDay && isDayUnlocked(progress, nextDay.id)) {
       const intro: DayIntroData = { dayId: nextDay.id };
@@ -119,6 +128,26 @@ export class DayEndOverlay extends Phaser.Scene {
       const x = CX - rowWidth / 2 + BUTTON_W / 2 + i * (BUTTON_W + BUTTON_GAP);
       new Button(this, x, CY + 140, choice.label, choice.go, { width: BUTTON_W });
     });
+  }
+
+  // A string of little flags in the party colours, swaying once into place.
+  private bunting(y: number): void {
+    const g = this.add.graphics();
+    const colours = [COLORS.peppaRed, COLORS.georgeBlue, COLORS.good, COLORS.bun];
+    const left = CX - 360;
+    const step = 40;
+    g.lineStyle(3, COLORS.outline, 1);
+    g.lineBetween(left, y, left + step * 18, y);
+    for (let i = 0; i < 18; i += 1) {
+      const x = left + i * step + 4;
+      g.fillStyle(colours[i % colours.length], 1);
+      g.fillTriangle(x, y, x + step - 8, y, x + (step - 8) / 2, y + 30);
+      g.strokeTriangle(x, y, x + step - 8, y, x + (step - 8) / 2, y + 30);
+    }
+    if (!reduceMotion()) {
+      g.setY(-40).setAlpha(0);
+      this.tweens.add({ targets: g, y: 0, alpha: 1, duration: 500, delay: 600, ease: 'Back.easeOut' });
+    }
   }
 
   // The kitchen is paused underneath; stop it first, then start the target.

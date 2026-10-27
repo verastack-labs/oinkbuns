@@ -66,5 +66,17 @@
     "voicePitch": 1.4,
     "voice": "suzy",
     "line": "Hoppy day!"
+  },
+  "daddy": {
+    "id": "daddy",
+    "name": "Daddy Pig",
+    "orderSizes": [
+      2,
+      3
+    ],
+    "patienceSeconds": 40,
+    "voicePitch": 0.85,
+    "voice": "grandpa",
+    "line": "Ho ho! Delicious!"
   }
 }

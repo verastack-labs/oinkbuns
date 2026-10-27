@@ -9,6 +9,7 @@ const STYLE: Record<string, { bg: string; tilt: string; patience: number }> = {
   grandpa: { bg: "bg-grass", tilt: "rotate-1", patience: 3 },
   mummy: { bg: "bg-star", tilt: "-rotate-1", patience: 4 },
   rebecca: { bg: "bg-sky", tilt: "rotate-2", patience: 2 },
+  daddy: { bg: "bg-grass", tilt: "-rotate-2", patience: 4 },
 };
 
 function Hearts({ count }: { count: number }) {
@@ -36,7 +37,7 @@ export function Customers() {
         Meet the customers
       </h2>
       <p className="mb-10 text-center text-lg font-semibold">Everyone wants buns. Some want them faster.</p>
-      <ul className="mx-auto grid max-w-6xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mx-auto grid max-w-6xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
         {CUSTOMERS.map((c) => {
           const s = STYLE[c.id];
           return (
