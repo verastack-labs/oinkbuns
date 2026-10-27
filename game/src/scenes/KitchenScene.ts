@@ -100,6 +100,7 @@ export class KitchenScene extends Phaser.Scene {
   private hintArrow!: Phaser.GameObjects.Image;
   private walkClock = 0;
   private peppaHappyUntil = 0;
+  private lastTick = -1;
   private peppaShadow!: Phaser.GameObjects.Ellipse;
   private peppaRoot!: Phaser.GameObjects.Container;
   private heldRoot!: Phaser.GameObjects.Container;
@@ -151,6 +152,7 @@ export class KitchenScene extends Phaser.Scene {
     this.ovenSlots = [];
     this.walkClock = 0;
     this.peppaHappyUntil = 0;
+    this.lastTick = -1;
 
     this.add.image(0, 0, 'kitchen-bg').setOrigin(0).setDepth(DEPTH.floor);
     this.drawShading();
@@ -264,7 +266,12 @@ export class KitchenScene extends Phaser.Scene {
       }
       case 'day-over': {
         sfx().setMusicRate(1);
-        const data: DayEndData = { dayId: this.day.config.id, pennies: event.pennies, stars: event.stars };
+        const data: DayEndData = {
+          dayId: this.day.config.id,
+          pennies: event.pennies,
+          stars: event.stars,
+          allHappy: this.day.state.strikes === 0 && this.day.state.served > 0,
+        };
         this.scene.launch(SceneKey.DayEnd, data);
         this.scene.pause();
         break;
@@ -313,6 +320,11 @@ export class KitchenScene extends Phaser.Scene {
     const end = this.day.config.end;
     if (s.remaining !== null) {
       const secs = Math.ceil(s.remaining);
+      // A soft tick for each of the last five seconds, rising in pitch.
+      if (secs <= 5 && secs > 0 && secs !== this.lastTick) {
+        this.lastTick = secs;
+        sfx().play('click', { rate: 1.4 + (5 - secs) * 0.12, volume: 0.5 });
+      }
       this.clockText.setText(`${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`);
       this.clockText.setColor(cssColor(secs <= 15 ? COLORS.bad : COLORS.text));
     } else if (end.type === 'customers') {

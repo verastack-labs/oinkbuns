@@ -24,7 +24,7 @@ export type StationId =
   | 'counter-0'
   | 'counter-1'
   | 'counter-2';
-export type CustomerId = 'george' | 'suzy' | 'danny' | 'grandpa' | 'mummy' | 'rebecca';
+export type CustomerId = 'george' | 'suzy' | 'danny' | 'grandpa' | 'mummy' | 'rebecca' | 'daddy';
 export type PromptLabel =
   | 'take-dough'
   | 'add-chips'

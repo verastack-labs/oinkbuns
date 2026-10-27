@@ -31,7 +31,7 @@ const SPEC: Array<{
   { id: 4, name: 'Choc Chip Day', end: { type: 'time', seconds: 90 }, maxQueue: 2, maxOrderSize: 2, customers: ['george', 'suzy', 'danny'], burn: 4, spawnGap: [5, 9], stars: [8, 12, 16] },
   { id: 5, name: "Grandpa's Big Order", end: { type: 'time', seconds: 100 }, maxQueue: 3, maxOrderSize: 3, customers: ['george', 'suzy', 'danny', 'grandpa'], burn: 4, spawnGap: [4, 8], stars: [10, 15, 20] },
   { id: 6, name: 'Rush Hour', end: { type: 'time', seconds: 90 }, maxQueue: 3, maxOrderSize: 3, customers: ['george', 'suzy', 'danny', 'grandpa', 'mummy', 'rebecca'], burn: 3.5, spawnGap: [2.5, 5], stars: [12, 18, 22] },
-  { id: 7, name: 'The Big Bun Party', end: { type: 'time', seconds: 120 }, maxQueue: 3, maxOrderSize: 3, customers: ['george', 'suzy', 'danny', 'grandpa', 'mummy', 'rebecca'], burn: 3, spawnGap: [3, 6], stars: [16, 24, 30] },
+  { id: 7, name: 'The Big Bun Party', end: { type: 'time', seconds: 120 }, maxQueue: 3, maxOrderSize: 3, customers: ['george', 'suzy', 'danny', 'grandpa', 'mummy', 'rebecca', 'daddy'], burn: 3, spawnGap: [3, 6], stars: [16, 24, 30] },
 ];
 
 describe('day config files', () => {

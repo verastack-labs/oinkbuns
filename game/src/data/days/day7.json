@@ -1,7 +1,7 @@
 {
   "id": 7,
   "name": "The Big Bun Party",
-  "twist": "A long, busy day with everyone in town. You can do it!",
+  "twist": "A long, busy day with everyone in town, even Daddy Pig!",
   "end": {
     "type": "time",
     "seconds": 120
@@ -12,7 +12,8 @@
     "danny",
     "grandpa",
     "mummy",
-    "rebecca"
+    "rebecca",
+    "daddy"
   ],
   "maxOrderSize": 3,
   "maxQueue": 3,
