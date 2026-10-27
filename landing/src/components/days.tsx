@@ -30,9 +30,9 @@ export function Days() {
         Seven busy days
       </h2>
       <p className="mb-10 text-center text-lg font-semibold">Each day adds one new twist. Can you get every star?</p>
-      <ol className="mx-auto flex max-w-6xl snap-x gap-5 overflow-x-auto px-2 pb-6 pt-2 lg:flex-wrap lg:justify-center lg:overflow-visible">
+      <ol className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-5 overflow-x-auto px-4 pb-6 pt-2 lg:mx-auto lg:max-w-6xl lg:flex-wrap lg:justify-center lg:overflow-visible lg:px-2">
         {DAYS.map((d) => (
-          <li key={d.id} className="snap-center">
+          <li key={d.id} className="shrink-0 snap-center">
             <a href="/play/" className="card-game hop flex h-full w-48 flex-col items-center gap-2 px-4 py-5 text-center">
               <span className="text-lg font-semibold text-peppa-red-ink">Day {d.id}</span>
               <Image src={d.art} alt="" width={64} height={64} />
