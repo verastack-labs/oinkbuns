@@ -15,6 +15,8 @@ const BASE: Record<string, number> = {
   suzy: 0xf2f2f2,
   danny: 0xb08457,
   grandpa: 0xe7a9c4,
+  mummy: 0xf7c948,
+  rebecca: 0xcfc6bd,
   'kitchen-bg': COLORS.wall,
   bowl: 0x8fc1e3,
   'chip-jar': 0x6b4a2b,

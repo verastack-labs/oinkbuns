@@ -1,10 +1,10 @@
 /**
- * The four customers as the landing page introduces them. Names and served
+ * The six customers as the landing page introduces them. Names and served
  * lines are the spec's (section 5.5); the art paths are the files
  * oinkbuns-internal/tools/art/export.mjs copies into public/art/, and the
  * sizes are the SVG viewBoxes so the img elements reserve the right space.
  */
-export type LandingCustomerId = "george" | "suzy" | "danny" | "grandpa";
+export type LandingCustomerId = "george" | "suzy" | "danny" | "grandpa" | "mummy" | "rebecca";
 
 export interface LandingCustomer {
   id: LandingCustomerId;
@@ -52,5 +52,23 @@ export const CUSTOMERS: LandingCustomer[] = [
     art: "/art/grandpa-idle.svg",
     width: 130,
     height: 160,
+  },
+  {
+    id: "mummy",
+    name: "Mummy Pig",
+    line: "Lovely, darling!",
+    wants: "One or two buns, from day 6.",
+    art: "/art/mummy-idle.svg",
+    width: 120,
+    height: 150,
+  },
+  {
+    id: "rebecca",
+    name: "Rebecca Rabbit",
+    line: "Hoppy day!",
+    wants: "Two buns, and she hops off fast.",
+    art: "/art/rebecca-idle.svg",
+    width: 110,
+    height: 140,
   },
 ];

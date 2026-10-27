@@ -8,7 +8,7 @@ import type { DayConfig } from './types';
  * every file explicitly. Zod 4 API: z.object, z.enum, z.literal,
  * z.discriminatedUnion, z.tuple, .nullable(), .refine().
  */
-const CustomerIdSchema = z.enum(['george', 'suzy', 'danny', 'grandpa']);
+const CustomerIdSchema = z.enum(['george', 'suzy', 'danny', 'grandpa', 'mummy', 'rebecca']);
 
 const DayEndSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('customers'), count: z.number().int().positive() }),

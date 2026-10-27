@@ -2,15 +2,32 @@
   "id": 100,
   "name": "Bun Rush",
   "twist": "No timer. Keep serving until three customers walk away sad!",
-  "end": { "type": "strikes", "strikes": 3 },
-  "customers": ["george", "suzy", "danny", "grandpa"],
+  "end": {
+    "type": "strikes",
+    "strikes": 3
+  },
+  "customers": [
+    "george",
+    "suzy",
+    "danny",
+    "grandpa",
+    "mummy",
+    "rebecca"
+  ],
   "maxOrderSize": 3,
   "maxQueue": 3,
-  "spawnGapSeconds": [4, 7],
+  "spawnGapSeconds": [
+    4,
+    7
+  ],
   "chipChance": 0.5,
   "bakeSeconds": 4,
   "burnWindowSeconds": 4,
   "patienceMultiplier": 1,
   "tutorial": false,
-  "stars": [10, 20, 30]
+  "stars": [
+    10,
+    20,
+    30
+  ]
 }
