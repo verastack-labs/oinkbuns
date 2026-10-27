@@ -194,7 +194,7 @@ export class KitchenFx {
   }
 
   private voice(id: CustomerId, delayMs: number): void {
-    const play = (): void => sfx().play(`voice-${id}`, { rate: customerDef(id).voicePitch });
+    const play = (): void => sfx().play(`voice-${customerDef(id).voice}`, { rate: customerDef(id).voicePitch });
     if (delayMs > 0) this.scene.time.delayedCall(delayMs, play);
     else play();
   }

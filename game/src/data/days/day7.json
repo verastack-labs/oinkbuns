@@ -2,15 +2,32 @@
   "id": 7,
   "name": "The Big Bun Party",
   "twist": "A long, busy day with everyone in town. You can do it!",
-  "end": { "type": "time", "seconds": 120 },
-  "customers": ["george", "suzy", "danny", "grandpa"],
+  "end": {
+    "type": "time",
+    "seconds": 120
+  },
+  "customers": [
+    "george",
+    "suzy",
+    "danny",
+    "grandpa",
+    "mummy",
+    "rebecca"
+  ],
   "maxOrderSize": 3,
   "maxQueue": 3,
-  "spawnGapSeconds": [3, 6],
+  "spawnGapSeconds": [
+    3,
+    6
+  ],
   "chipChance": 0.6,
   "bakeSeconds": 4,
   "burnWindowSeconds": 3,
   "patienceMultiplier": 0.8,
   "tutorial": false,
-  "stars": [16, 24, 30]
+  "stars": [
+    16,
+    24,
+    30
+  ]
 }

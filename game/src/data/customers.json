@@ -2,33 +2,69 @@
   "george": {
     "id": "george",
     "name": "George",
-    "orderSizes": [1],
+    "orderSizes": [
+      1
+    ],
     "patienceSeconds": 40,
     "voicePitch": 0.8,
-    "line": "Dine-saw! Grrr!"
+    "line": "Dine-saw! Grrr!",
+    "voice": "george"
   },
   "suzy": {
     "id": "suzy",
     "name": "Suzy Sheep",
-    "orderSizes": [1, 2],
+    "orderSizes": [
+      1,
+      2
+    ],
     "patienceSeconds": 30,
     "voicePitch": 1.2,
-    "line": "Baa! Lovely!"
+    "line": "Baa! Lovely!",
+    "voice": "suzy"
   },
   "danny": {
     "id": "danny",
     "name": "Danny Dog",
-    "orderSizes": [2],
+    "orderSizes": [
+      2
+    ],
     "patienceSeconds": 20,
     "voicePitch": 1.1,
-    "line": "Woof! Thanks!"
+    "line": "Woof! Thanks!",
+    "voice": "danny"
   },
   "grandpa": {
     "id": "grandpa",
     "name": "Grandpa Pig",
-    "orderSizes": [3],
+    "orderSizes": [
+      3
+    ],
     "patienceSeconds": 35,
     "voicePitch": 0.7,
-    "line": "Ho ho, splendid!"
+    "line": "Ho ho, splendid!",
+    "voice": "grandpa"
+  },
+  "mummy": {
+    "id": "mummy",
+    "name": "Mummy Pig",
+    "orderSizes": [
+      1,
+      2
+    ],
+    "patienceSeconds": 38,
+    "voicePitch": 0.9,
+    "voice": "suzy",
+    "line": "Lovely, darling!"
+  },
+  "rebecca": {
+    "id": "rebecca",
+    "name": "Rebecca Rabbit",
+    "orderSizes": [
+      2
+    ],
+    "patienceSeconds": 18,
+    "voicePitch": 1.4,
+    "voice": "suzy",
+    "line": "Hoppy day!"
   }
 }

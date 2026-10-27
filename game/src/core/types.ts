@@ -24,7 +24,7 @@ export type StationId =
   | 'counter-0'
   | 'counter-1'
   | 'counter-2';
-export type CustomerId = 'george' | 'suzy' | 'danny' | 'grandpa';
+export type CustomerId = 'george' | 'suzy' | 'danny' | 'grandpa' | 'mummy' | 'rebecca';
 export type PromptLabel =
   | 'take-dough'
   | 'add-chips'
@@ -54,6 +54,7 @@ export interface CustomerDef {
   orderSizes: number[];
   patienceSeconds: number;
   voicePitch: number; // playback rate for the talk blip, 1 = normal
+  voice: 'george' | 'suzy' | 'danny' | 'grandpa'; // which recorded blip plays; Mummy and Rebecca borrow Suzy's, pitched differently
   line: string; // said when the order completes
 }
 

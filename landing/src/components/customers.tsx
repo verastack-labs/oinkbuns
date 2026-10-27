@@ -7,6 +7,8 @@ const STYLE: Record<string, { bg: string; tilt: string; patience: number }> = {
   suzy: { bg: "bg-peppa-pink", tilt: "rotate-2", patience: 3 },
   danny: { bg: "bg-star", tilt: "-rotate-1", patience: 2 },
   grandpa: { bg: "bg-grass", tilt: "rotate-1", patience: 3 },
+  mummy: { bg: "bg-star", tilt: "-rotate-1", patience: 4 },
+  rebecca: { bg: "bg-sky", tilt: "rotate-2", patience: 2 },
 };
 
 function Hearts({ count }: { count: number }) {
@@ -26,7 +28,7 @@ function Hearts({ count }: { count: number }) {
   );
 }
 
-/** Collectible-card style introductions for the four customers. */
+/** Collectible-card style introductions for the customers. */
 export function Customers() {
   return (
     <section aria-labelledby="customers-heading" className="planks px-4 py-16">
@@ -34,7 +36,7 @@ export function Customers() {
         Meet the customers
       </h2>
       <p className="mb-10 text-center text-lg font-semibold">Everyone wants buns. Some want them faster.</p>
-      <ul className="mx-auto grid max-w-6xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="mx-auto grid max-w-6xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {CUSTOMERS.map((c) => {
           const s = STYLE[c.id];
           return (
