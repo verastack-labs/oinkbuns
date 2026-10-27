@@ -43,7 +43,7 @@ export const FAQS: Faq[] = [
   },
   {
     q: "How many levels are there?",
-    a: "Seven days: First Bake, Busy Morning, Don't Burn Them!, Choc Chip Day, Grandpa's Big Order, Rush Hour and The Big Bun Party. Each day adds a twist, and three stars on a day earns a sticker for your sticker book. Finish day 5 to unlock Bun Rush, an endless mode that ends when three customers leave sad, with your best score kept on your device.",
+    a: "Seven days: First Bake, Busy Morning, Don't Burn Them!, Choc Chip Day, Grandpa's Big Order, Rush Hour and The Big Bun Party. Each day adds a twist, and three stars on a day earns a sticker for your sticker book. Finish day 5 to unlock Bun Rush, an endless mode that ends when three customers leave sad, with your best score kept on your device and bronze, silver and gold stickers for big scores.",
   },
   {
     q: "Does Oinkbuns save my progress?",
