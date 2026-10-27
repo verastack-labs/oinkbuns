@@ -42,8 +42,8 @@ Read this before changing anything in the repo.
   restructure the sentence. The one exception is the block `next dev`
   generates in `landing/AGENTS.md`, which is tool output and is never
   edited by hand.
-- Commit messages: imperative subject, a body that explains why, and the
-  trailer line `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>`.
+- Commit messages: imperative subject and a body that explains why. No
+  attribution trailer is required.
 - Testing is deliberately lean: only the tests the spec lists (core rule
   modules, day config schema, the devlog loader). Do not add a browser
   test suite.

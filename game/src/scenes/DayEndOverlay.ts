@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { sfx } from '../audio';
 import { LOGICAL_HEIGHT, LOGICAL_WIDTH } from '../core/layout';
-import { hasSticker, isDayUnlocked, withStars } from '../core/save';
+import { hasSticker, isDayUnlocked, RUSH_STICKER_PENNIES, withStars } from '../core/save';
 import { DAYS, RUSH_ID } from '../data/days';
 import { confetti } from '../fx/particles';
 import { reduceMotion } from '../fx/reduceMotion';
@@ -74,13 +74,26 @@ export class DayEndOverlay extends Phaser.Scene {
       });
     }
 
-    // Three stars earns the day's sticker; it pops in once, the first time.
-    if (data.stars === 3 && this.textures.exists(`sticker-${data.dayId}`)) {
-      const sticker = this.add.image(CX + 250, CY - 120, `sticker-${data.dayId}`).setAngle(-12);
+    // Three stars earns the day's sticker, and a big Bun Rush score earns a
+    // bronze, silver or gold one. A new sticker pops in, the first time only.
+    let stickerKey: string | null = null;
+    let isNew = false;
+    if (rush) {
+      const level = RUSH_STICKER_PENNIES.filter((p) => data.pennies >= p).length;
+      if (level > 0) {
+        stickerKey = `sticker-rush-${level}`;
+        isNew = previousBest < RUSH_STICKER_PENNIES[level - 1];
+      }
+    } else if (data.stars === 3 && this.textures.exists(`sticker-${data.dayId}`)) {
+      stickerKey = `sticker-${data.dayId}`;
+      isNew = !hadSticker;
+    }
+    if (stickerKey) {
+      const sticker = this.add.image(CX + 250, CY - 120, stickerKey).setAngle(-12);
       this.add
-        .text(CX + 250, CY - 56, hadSticker ? 'Sticker!' : 'New sticker!', { ...text, fontSize: '22px', fontStyle: 'bold' })
+        .text(CX + 250, CY - 56, isNew ? 'New sticker!' : 'Sticker!', { ...text, fontSize: '22px', fontStyle: 'bold' })
         .setOrigin(0.5);
-      if (!hadSticker && !reduceMotion()) {
+      if (isNew && !reduceMotion()) {
         sticker.setScale(0);
         this.tweens.add({ targets: sticker, scale: 1.2, duration: 380, delay: 1000, ease: 'Back.easeOut' });
         this.time.delayedCall(1000, () => sfx().play('star', { rate: 1.4 }));

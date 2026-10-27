@@ -8,6 +8,7 @@ import {
   saveProgress,
   withStars,
   hasSticker,
+  rushStickersEarned,
   type KeyValueStore,
 } from './save';
 
@@ -74,6 +75,11 @@ describe('save', () => {
     const store = createMemoryStore();
     store.setItem(SAVE_KEY, JSON.stringify({ version: 1, bestStars: { '1': 2 }, muted: false }));
     expect(loadProgress(store)).toEqual({ version: 1, bestStars: { '1': 2 }, muted: false, slowCustomers: false, bigTargets: false, bestRush: 0 });
+  });
+
+  it('rushStickersEarned counts bronze, silver and gold by best score', () => {
+    const at = (bestRush: number) => rushStickersEarned({ ...emptyProgress(), bestRush });
+    expect([at(0), at(14), at(15), at(30), at(49), at(50), at(99)]).toEqual([0, 0, 1, 2, 2, 3, 3]);
   });
 
   it('hasSticker is true only for days finished with three stars', () => {

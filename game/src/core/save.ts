@@ -118,3 +118,11 @@ export function createMemoryStore(): KeyValueStore {
 export function hasSticker(progress: Progress, dayId: number): boolean {
   return progress.bestStars[String(dayId)] === 3;
 }
+
+// Bun Rush stickers: bronze, silver and gold for best scores of at least
+// these many pennies. Derived from the saved best, like the day stickers.
+export const RUSH_STICKER_PENNIES = [15, 30, 50] as const;
+
+export function rushStickersEarned(progress: Progress): number {
+  return RUSH_STICKER_PENNIES.filter((p) => progress.bestRush >= p).length;
+}
